@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Wei · 个人主页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.2);
+            --border-light: rgba(203, 213, 225, 0.5);
+            --shadow-sm: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            --shadow-md: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+        }
+
+        body.dark {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.75);
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --border-light: rgba(51, 65, 85, 0.6);
+            --shadow-sm: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Inter', 'Roboto', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            transition: background 0.3s ease, color 0.2s ease;
+            line-height: 1.5;
+            min-height: 100vh;
+            backdrop-filter: blur(2px);
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.08) 0%, rgba(139, 92, 246, 0.05) 45%, transparent 70%);
+        }
+
+        body.dark .bg-glow {
+            background: radial-gradient(circle at 80% 30%, rgba(56, 189, 248, 0.1) 0%, rgba(139, 92, 246, 0.06) 60%, transparent 90%);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .hero {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3.5rem;
+            gap: 1rem;
+        }
+
+        .title-section h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .title-section p {
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-light);
+            border-radius: 60px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            color: var(--text-primary);
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(0.96);
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .greeting-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-md);
+            transition: transform 0.2s;
+        }
+
+        .greeting-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .time-greeting {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .live-time {
+            font-family: monospace;
+            font-size: 1.2rem;
+            color: var(--accent);
+            border-left: 3px solid var(--accent);
+            padding-left: 1rem;
+            margin: 0.75rem 0;
+        }
+
+        .status {
+            display: inline-block;
+            background: rgba(34, 197, 94, 0.15);
+            backdrop-filter: blur(4px);
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #10b981;
+        }
+
+        .skills {
+            margin: 3rem 0;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .skill-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .skill-item {
+            background: var(--card-bg);
+            backdrop-filter: blur(4px);
+            border: 1px solid var(--border-light);
+            border-radius: 1.5rem;
+            padding: 0.8rem 1rem;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .skill-item:hover {
+            border-color: var(--accent);
+            transform: translateY(-3px);
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .links {
+            margin: 3rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            padding: 0.7rem 1.6rem;
+            border-radius: 60px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            border: 1px solid var(--border-light);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            background: var(--accent-glow);
+        }
+
+        footer {
+            margin-top: 4rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-light);
+            padding-top: 2rem;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.5rem 1rem;
+            }
+            .hero {
+                flex-direction: column;
+                align-items: start;
+            }
+            .time-greeting {
+                font-size: 1.4rem;
+            }
+            .greeting-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="container">
+    <div class="hero">
+        <div class="title-section">
+            <h1>Wei · 筑梦空间</h1>
+            <p>✨ 代码 · 设计 · 无限可能</p>
+        </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="深色模式切换">
+            🌙 深色模式
+        </button>
+    </div>
+
+    <div class="greeting-card">
+        <div class="time-greeting" id="greetingText">Loading...</div>
+        <div class="live-time" id="liveClock">--:--:--</div>
+        <div class="status">🟢 在线 · 可用 GitHub Pages 部署</div>
+    </div>
+
+    <div class="skills">
+        <div class="section-title">
+            🧰 技术工具箱
+        </div>
+        <div class="skill-grid">
+            <div class="skill-item">HTML5 / CSS3</div>
+            <div class="skill-item">JavaScript (ES6+)</div>
+            <div class="skill-item">React / Vue</div>
+            <div class="skill-item">Python / Flask</div>
+            <div class="skill-item">Git & GitHub</div>
+            <div class="skill-item">UI/UX 感性</div>
+        </div>
+    </div>
+
+    <div class="section-title" style="margin-bottom: 1rem;">
+        🔗 快速链接
+    </div>
+    <div class="links">
+        <a href="#" class="btn btn-primary" id="githubBtn">🐙 GitHub 主页</a>
+        <a href="#" class="btn btn-outline" id="repoBtn">📁 当前仓库</a>
+        <a href="tools.html" class="btn btn-outline" id="toolsBtn">🧰 万能工具箱</a>
+        <a href="#" class="btn btn-outline" id="contactBtn">✉️ 联络灵感</a>
+    </div>
+
+    <footer>
+        <p>🚀 托管于 GitHub Pages · 动态主题切换 · 每一次刷新都是新的相遇</p>
+        <p style="margin-top: 8px;">© 2026 Wei · 简单 · 自由 · 创造力</p>
+    </footer>
+</div>
+
+<script>
+    function updateGreetingAndTime() {
+        const now = new Date();
+        const hours = now.getHours();
+        let greeting = '';
+        if (hours >= 5 && hours < 12) greeting = '🌅 早安 · 元气满满';
+        else if (hours >= 12 && hours < 18) greeting = '☀️ 午后惬意 · 灵感涌动';
+        else if (hours >= 18 && hours < 22) greeting = '🌇 傍晚好 · 创造时分';
+        else greeting = '🌙 夜深人静 · 代码与星光';
+
+        const greetElement = document.getElementById('greetingText');
+        if (greetElement) greetElement.innerText = `${greeting}，我是 Wei 👋`;
+
+        const clockElement = document.getElementById('liveClock');
+        if (clockElement) {
+            const formatted = now.toLocaleTimeString('zh-CN', { hour12: false });
+            clockElement.innerText = `🕒 本地时间 · ${formatted}`;
+        }
+    }
+    updateGreetingAndTime();
+    setInterval(updateGreetingAndTime, 1000);
+
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const rootBody = document.body;
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    function setTheme(isDark) {
+        if (isDark) {
+            rootBody.classList.add('dark');
+            if (themeToggleBtn) themeToggleBtn.innerHTML = '☀️ 浅色模式';
+        } else {
+            rootBody.classList.remove('dark');
+            if (themeToggleBtn) themeToggleBtn.innerHTML = '🌙 深色模式';
+        }
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    }
+
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        setTheme(true);
+    } else if (savedTheme === 'light') {
+        setTheme(false);
+    } else {
+        setTheme(prefersDark);
+    }
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            const isDark = rootBody.classList.contains('dark');
+            setTheme(!isDark);
+        });
+    }
+
+    const username = 'wYz1108';
+    const repoName = 'wei.github.io';
+
+    const githubBtn = document.getElementById('githubBtn');
+    const repoBtn = document.getElementById('repoBtn');
+    const contactBtn = document.getElementById('contactBtn');
+
+    if (githubBtn) {
+        githubBtn.href = `https://github.com/${username}`;
+        githubBtn.target = '_blank';
+    }
+    if (repoBtn) {
+        repoBtn.href = `https://github.com/${username}/${repoName}`;
+        repoBtn.target = '_blank';
+    }
+    if (contactBtn) {
+        contactBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('📧 欢迎交流：我们可以通过 GitHub Issues 或 Discussions 沟通 🌟\n' +
+                '你也可以在仓库中留下你的想法！');
+        });
+    }
+
+    console.log(`✨ GitHub Pages 网站已启用 | 主题切换已缓存 | 欢迎 ${username}`);
+</script>
+</body>
+</html>
