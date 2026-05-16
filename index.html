@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Wei · 个人主页</title>
+    <title>Wei · 筑梦空间</title>
     <style>
         * {
             margin: 0;
@@ -308,6 +308,7 @@
 </div>
 
 <script>
+    // 问候与时钟
     function updateGreetingAndTime() {
         const now = new Date();
         const hours = now.getHours();
@@ -329,6 +330,7 @@
     updateGreetingAndTime();
     setInterval(updateGreetingAndTime, 1000);
 
+    // 深色模式 (独立存储)
     const themeToggleBtn = document.getElementById('themeToggle');
     const rootBody = document.body;
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -341,10 +343,10 @@
             rootBody.classList.remove('dark');
             if (themeToggleBtn) themeToggleBtn.innerHTML = '🌙 深色模式';
         }
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        localStorage.setItem('homeTheme', isDark ? 'dark' : 'light');
     }
 
-    const savedTheme = localStorage.getItem('theme');
+    const savedTheme = localStorage.getItem('homeTheme');
     if (savedTheme === 'dark') {
         setTheme(true);
     } else if (savedTheme === 'light') {
@@ -360,7 +362,8 @@
         });
     }
 
-    const username = 'wYz1108';
+    // 动态链接
+    const username = 'wYz1108';   // 请替换成您的 GitHub 用户名
     const repoName = 'wei.github.io';
 
     const githubBtn = document.getElementById('githubBtn');
@@ -378,12 +381,9 @@
     if (contactBtn) {
         contactBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            alert('📧 欢迎交流：我们可以通过 GitHub Issues 或 Discussions 沟通 🌟\n' +
-                '你也可以在仓库中留下你的想法！');
+            alert('📧 欢迎交流：可以通过 GitHub Issues 或 Discussions 沟通 🌟\n也可以在仓库中留下您的想法！');
         });
     }
-
-    console.log(`✨ GitHub Pages 网站已启用 | 主题切换已缓存 | 欢迎 ${username}`);
 </script>
 </body>
 </html>
