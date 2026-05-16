@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>✨ 万能工具箱 · 交互小工具集</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+            --text-light: #475569;
+            --border: #e2e8f0;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+
+        body.dark {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f1f5f9;
+            --text-light: #94a3b8;
+            --border: #334155;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            transition: background 0.2s, color 0.2s;
+            padding: 2rem 1.5rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        h1 {
+            font-size: 1.9rem;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .theme-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 2rem;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text);
+        }
+        .back-home {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 2rem;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            margin-right: 0.8rem;
+        }
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 1.8rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 1.5rem;
+            padding: 1.2rem 1.2rem 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: transform 0.1s ease;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-left: 3px solid var(--primary);
+            padding-left: 0.7rem;
+        }
+        .tool-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        input, button, select, textarea {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 0.6rem 0.8rem;
+            color: var(--text);
+            font-size: 0.9rem;
+            outline: none;
+            transition: 0.1s;
+        }
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        button:hover {
+            background: var(--primary-hover);
+        }
+        .result {
+            background: var(--bg);
+            border-radius: 1rem;
+            padding: 0.6rem;
+            font-size: 0.9rem;
+            word-break: break-word;
+            margin-top: 0.3rem;
+        }
+        .flex-row {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        hr {
+            border-color: var(--border);
+            margin: 0.5rem 0;
+        }
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+        @media (max-width: 760px) {
+            body { padding: 1rem; }
+            .tools-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div>
+            <a href="index.html" class="back-home">🏠 返回主页</a>
+            <span style="font-size: 1rem;">🧰 万能工具箱</span>
+        </div>
+        <button class="theme-btn" id="themeToggle">🌙 深色模式</button>
+    </div>
+    <div class="tools-grid">
+        
+        <!-- 1. 待办清单 -->
+        <div class="card">
+            <h3>✓ 待办清单</h3>
+            <div class="tool-content">
+                <div class="flex-row">
+                    <input type="text" id="todoInput" placeholder="写一个任务...">
+                    <button id="addTodoBtn">➕ 添加</button>
+                </div>
+                <ul id="todoList" style="list-style: none; max-height: 180px; overflow-y: auto; padding-left: 0;"></ul>
+            </div>
+        </div>
+
+        <!-- 2. 简易计算器 -->
+        <div class="card">
+            <h3>📱 简易计算器</h3>
+            <div class="tool-content">
+                <input type="text" id="calcInput" placeholder="表达式 (例: 12+8*2)" value="">
+                <div class="flex-row">
+                    <button id="calcBtn">= 计算</button>
+                    <button id="clearCalc">C 清空</button>
+                </div>
+                <div class="result" id="calcResult">结果: </div>
+            </div>
+        </div>
+
+        <!-- 3. 温度转换 -->
+        <div class="card">
+            <h3>🌡️ 温度转换</h3>
+            <div class="tool-content">
+                <input type="number" id="tempInput" placeholder="数值" value="25">
+                <select id="tempFrom">
+                    <option value="C">摄氏度 °C</option>
+                    <option value="F">华氏度 °F</option>
+                </select>
+                <span> → </span>
+                <select id="tempTo">
+                    <option value="F">华氏度 °F</option>
+                    <option value="C">摄氏度 °C</option>
+                </select>
+                <button id="convertTemp">转换</button>
+                <div class="result" id="tempResult">结果: 77 °F</div>
+            </div>
+        </div>
+
+        <!-- 4. 随机名言 -->
+        <div class="card">
+            <h3>📜 随机名言</h3>
+            <div class="tool-content">
+                <div class="result" id="quoteText" style="min-height: 70px;">点击按钮生成一句名言</div>
+                <button id="newQuoteBtn">✨ 随机一句</button>
+            </div>
+        </div>
+
+        <!-- 5. 访问计数器 -->
+        <div class="card">
+            <h3>👀 访问计数器</h3>
+            <div class="tool-content">
+                <div class="result" id="visitCount">本设备访问次数: --</div>
+                <button id="resetCountBtn">重置计数器</button>
+            </div>
+        </div>
+
+        <!-- 6. 倒计时器 -->
+        <div class="card">
+            <h3>⏳ 倒计时器 (秒)</h3>
+            <div class="tool-content">
+                <input type="number" id="countdownSeconds" placeholder="秒数" value="60">
+                <div class="flex-row">
+                    <button id="startCountdown">开始</button>
+                    <button id="stopCountdown">停止</button>
+                </div>
+                <div class="result" id="countdownDisplay">剩余: 0 秒</div>
+            </div>
+        </div>
+
+        <!-- 7. 文字计数器 -->
+        <div class="card">
+            <h3>📝 文字计数器</h3>
+            <div class="tool-content">
+                <textarea id="textCounterInput" rows="3" placeholder="输入一些文字..."></textarea>
+                <div class="result" id="textStats">字符数: 0 | 单词数: 0</div>
+            </div>
+        </div>
+
+        <!-- 8. 颜色工具 -->
+        <div class="card">
+            <h3>🎨 颜色工具</h3>
+            <div class="tool-content">
+                <div class="flex-row">
+                    <input type="color" id="colorPicker" value="#3b82f6">
+                    <span id="colorCode">#3b82f6</span>
+                </div>
+                <button id="randomColorBtn">🎲 随机颜色</button>
+                <div class="result" id="colorDemo" style="height: 50px; background: #3b82f6; border-radius: 12px;"></div>
+            </div>
+        </div>
+
+        <!-- 9. 长度转换 -->
+        <div class="card">
+            <h3>📏 长度转换</h3>
+            <div class="tool-content">
+                <input type="number" id="lengthVal" placeholder="数值" value="1">
+                <select id="lengthFrom">
+                    <option value="m">米(m)</option>
+                    <option value="ft">英尺(ft)</option>
+                    <option value="cm">厘米(cm)</option>
+                    <option value="in">英寸(in)</option>
+                </select>
+                <span>→</span>
+                <select id="lengthTo">
+                    <option value="ft">英尺(ft)</option>
+                    <option value="m">米(m)</option>
+                    <option value="cm">厘米(cm)</option>
+                    <option value="in">英寸(in)</option>
+                </select>
+                <button id="convertLength">转换</button>
+                <div class="result" id="lengthResult">结果: </div>
+            </div>
+        </div>
+
+        <!-- 10. Markdown预览 -->
+        <div class="card">
+            <h3>📄 Markdown 预览</h3>
+            <div class="tool-content">
+                <textarea id="mdInput" rows="3" placeholder="# 标题\n**粗体**\n- 列表项"></textarea>
+                <div class="result" id="mdPreview" style="background: var(--bg); min-height: 100px;"></div>
+            </div>
+        </div>
+
+        <!-- 11. 随机密码生成 -->
+        <div class="card">
+            <h3>🔐 随机密码</h3>
+            <div class="tool-content">
+                <div class="flex-row">
+                    <input type="number" id="pwdLength" value="12" min="4" max="32">
+                    <button id="genPassword">生成密码</button>
+                </div>
+                <div class="result" id="passwordResult">点击生成</div>
+            </div>
+        </div>
+
+        <!-- 12. 随机数 -->
+        <div class="card">
+            <h3>🎲 随机数/骰子</h3>
+            <div class="tool-content">
+                <div class="flex-row">
+                    <span>最小值</span><input type="number" id="randMin" value="1">
+                    <span>最大值</span><input type="number" id="randMax" value="100">
+                </div>
+                <button id="rollBtn">🎲 掷出随机数</button>
+                <div class="result" id="randomResult">结果: -</div>
+            </div>
+        </div>
+    </div>
+    <footer>⚡ 所有工具均在浏览器本地运行 | 待办清单 & 访问计数会保存在设备中 | <a href="index.html" style="color: var(--primary);">🏠 返回主页</a></footer>
+</div>
+
+<script>
+    // 深色模式
+    const themeBtn = document.getElementById('themeToggle');
+    const root = document.body;
+    if (localStorage.getItem('darkModeTools') === 'true') {
+        root.classList.add('dark');
+        themeBtn.innerText = '☀️ 浅色模式';
+    }
+    themeBtn.addEventListener('click', () => {
+        root.classList.toggle('dark');
+        const isDark = root.classList.contains('dark');
+        localStorage.setItem('darkModeTools', isDark);
+        themeBtn.innerText = isDark ? '☀️ 浅色模式' : '🌙 深色模式';
+    });
+
+    // 待办清单
+    let todos = JSON.parse(localStorage.getItem('todosTools')) || [];
+    function renderTodos() {
+        const listUl = document.getElementById('todoList');
+        if (!listUl) return;
+        listUl.innerHTML = '';
+        todos.forEach((todo, idx) => {
+            const li = document.createElement('li');
+            li.style.display = 'flex';
+            li.style.justifyContent = 'space-between';
+            li.style.alignItems = 'center';
+            li.style.marginBottom = '0.5rem';
+            li.style.background = 'var(--bg)';
+            li.style.padding = '0.3rem 0.6rem';
+            li.style.borderRadius = '12px';
+            const span = document.createElement('span');
+            span.textContent = todo;
+            const delBtn = document.createElement('button');
+            delBtn.textContent = '❌';
+            delBtn.style.background = 'transparent';
+            delBtn.style.color = 'var(--text-light)';
+            delBtn.style.padding = '0 0.3rem';
+            delBtn.onclick = () => {
+                todos.splice(idx, 1);
+                localStorage.setItem('todosTools', JSON.stringify(todos));
+                renderTodos();
+            };
+            li.appendChild(span);
+            li.appendChild(delBtn);
+            listUl.appendChild(li);
+        });
+    }
+    document.getElementById('addTodoBtn')?.addEventListener('click', () => {
+        const input = document.getElementById('todoInput');
+        const val = input.value.trim();
+        if (val) {
+            todos.push(val);
+            localStorage.setItem('todosTools', JSON.stringify(todos));
+            renderTodos();
+            input.value = '';
+        }
+    });
+    renderTodos();
+
+    // 计算器
+    document.getElementById('calcBtn')?.addEventListener('click', () => {
+        const expr = document.getElementById('calcInput').value;
+        try {
+            const result = Function('"use strict";return (' + expr + ')')();
+            document.getElementById('calcResult').innerText = '结果: ' + result;
+        } catch(e) {
+            document.getElementById('calcResult').innerText = '结果: 表达式错误';
+        }
+    });
+    document.getElementById('clearCalc')?.addEventListener('click', () => {
+        document.getElementById('calcInput').value = '';
+        document.getElementById('calcResult').innerText = '结果: ';
+    });
+
+    // 温度转换
+    document.getElementById('convertTemp')?.addEventListener('click', () => {
+        let val = parseFloat(document.getElementById('tempInput').value);
+        if (isNaN(val)) val = 0;
+        const from = document.getElementById('tempFrom').value;
+        const to = document.getElementById('tempTo').value;
+        let celsius = 0;
+        if (from === 'C') celsius = val;
+        else celsius = (val - 32) * 5/9;
+        let result = 0;
+        if (to === 'C') result = celsius;
+        else result = celsius * 9/5 + 32;
+        document.getElementById('tempResult').innerHTML = `结果: ${result.toFixed(2)} °${to === 'C' ? 'C' : 'F'}`;
+    });
+    document.getElementById('convertTemp')?.click();
+
+    // 随机名言
+    const quotes = [
+        "代码改变世界，一行一行。", "简单是可靠的先决条件。", "保持好奇，持续创造。",
+        "GitHub Pages 让每个人拥有网站。", "今日事，今日毕。", "设计不只是看起来怎样，还在于如何工作。",
+        "与其等待机会，不如创造机会。", "不要害怕犯错，害怕停下。", "万物皆可自动化。"
+    ];
+    document.getElementById('newQuoteBtn')?.addEventListener('click', () => {
+        const idx = Math.floor(Math.random() * quotes.length);
+        document.getElementById('quoteText').innerText = `“${quotes[idx]}”`;
+    });
+    document.getElementById('newQuoteBtn')?.click();
+
+    // 访问计数器
+    let visits = localStorage.getItem('visitCountTools') ? parseInt(localStorage.getItem('visitCountTools')) : 0;
+    visits++;
+    localStorage.setItem('visitCountTools', visits);
+    document.getElementById('visitCount').innerText = `本设备访问次数: ${visits}`;
+    document.getElementById('resetCountBtn')?.addEventListener('click', () => {
+        localStorage.setItem('visitCountTools', 0);
+        document.getElementById('visitCount').innerText = '本设备访问次数: 0';
+    });
+
+    // 倒计时
+    let countdownInterval = null;
+    function stopCountdown() {
+        if (countdownInterval) clearInterval(countdownInterval);
+        countdownInterval = null;
+    }
+    document.getElementById('startCountdown')?.addEventListener('click', () => {
+        stopCountdown();
+        let remaining = parseInt(document.getElementById('countdownSeconds').value);
+        if (isNaN(remaining)) remaining = 0;
+        const display = document.getElementById('countdownDisplay');
+        if (remaining <= 0) {
+            display.innerText = '剩余: 0 秒 (请设置正数)';
+            return;
+        }
+        display.innerText = `剩余: ${remaining} 秒`;
+        countdownInterval = setInterval(() => {
+            if (remaining <= 1) {
+                clearInterval(countdownInterval);
+                display.innerText = '⏰ 时间到!';
+                countdownInterval = null;
+            } else {
+                remaining--;
+                display.innerText = `剩余: ${remaining} 秒`;
+            }
+        }, 1000);
+    });
+    document.getElementById('stopCountdown')?.addEventListener('click', stopCountdown);
+
+    // 文字计数器
+    const textArea = document.getElementById('textCounterInput');
+    function updateTextStats() {
+        const text = textArea.value;
+        const charCount = text.length;
+        const wordCount = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+        document.getElementById('textStats').innerText = `字符数: ${charCount} | 单词数: ${wordCount}`;
+    }
+    textArea?.addEventListener('input', updateTextStats);
+    updateTextStats();
+
+    // 颜色工具
+    const colorPicker = document.getElementById('colorPicker');
+    const colorCodeSpan = document.getElementById('colorCode');
+    const colorDemoDiv = document.getElementById('colorDemo');
+    function updateColor(color) {
+        colorDemoDiv.style.background = color;
+        colorCodeSpan.innerText = color;
+    }
+    colorPicker?.addEventListener('input', (e) => updateColor(e.target.value));
+    document.getElementById('randomColorBtn')?.addEventListener('click', () => {
+        const randomHex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
+        colorPicker.value = randomHex;
+        updateColor(randomHex);
+    });
+
+    // 长度转换
+    const lengthMap = { m:1, ft:3.28084, cm:100, in:39.3701 };
+    document.getElementById('convertLength')?.addEventListener('click', () => {
+        let val = parseFloat(document.getElementById('lengthVal').value);
+        if (isNaN(val)) val = 0;
+        const from = document.getElementById('lengthFrom').value;
+        const to = document.getElementById('lengthTo').value;
+        const meters = val / lengthMap[from];
+        const result = meters * lengthMap[to];
+        document.getElementById('lengthResult').innerText = `结果: ${result.toFixed(4)} ${to}`;
+    });
+    document.getElementById('convertLength')?.click();
+
+    // Markdown预览
+    const mdTextarea = document.getElementById('mdInput');
+    const previewDiv = document.getElementById('mdPreview');
+    function updateMarkdown() {
+        if (typeof marked !== 'undefined') {
+            previewDiv.innerHTML = marked.parse(mdTextarea.value);
+        } else {
+            previewDiv.innerText = 'marked库加载中...';
+        }
+    }
+    mdTextarea?.addEventListener('input', updateMarkdown);
+    mdTextarea.value = "# 欢迎\n**实时预览**\n- 列表1\n- 列表2";
+    updateMarkdown();
+
+    // 随机密码
+    function generatePassword(len) {
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*()_+";
+        let pwd = "";
+        for(let i=0;i<len;i++) pwd += chars[Math.floor(Math.random()*chars.length)];
+        return pwd;
+    }
+    document.getElementById('genPassword')?.addEventListener('click', () => {
+        let len = parseInt(document.getElementById('pwdLength').value);
+        if (isNaN(len)) len = 12;
+        len = Math.min(40, Math.max(4, len));
+        document.getElementById('passwordResult').innerText = generatePassword(len);
+    });
+    document.getElementById('genPassword')?.click();
+
+    // 随机数
+    document.getElementById('rollBtn')?.addEventListener('click', () => {
+        let min = parseInt(document.getElementById('randMin').value);
+        let max = parseInt(document.getElementById('randMax').value);
+        if(isNaN(min)) min=1;
+        if(isNaN(max)) max=100;
+        if(min > max) [min,max] = [max,min];
+        const rand = Math.floor(Math.random() * (max - min + 1) + min);
+        document.getElementById('randomResult').innerText = `结果: ${rand}`;
+    });
+    document.getElementById('rollBtn')?.click();
+</script>
+</body>
+</html>
