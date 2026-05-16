@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>✨ 万能工具箱 · 交互小工具集</title>
+    <title>万能工具箱 · 18合1交互小工具集</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         * {
@@ -21,6 +21,8 @@
             --primary: #3b82f6;
             --primary-hover: #2563eb;
             --shadow: 0 8px 20px rgba(0,0,0,0.05);
+            --success: #10b981;
+            --error: #ef4444;
         }
 
         body.dark {
@@ -36,11 +38,11 @@
             background: var(--bg);
             color: var(--text);
             transition: background 0.2s, color 0.2s;
-            padding: 2rem 1.5rem;
+            padding: 1.5rem;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
@@ -50,52 +52,59 @@
             align-items: center;
             flex-wrap: wrap;
             margin-bottom: 2rem;
+            gap: 1rem;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
         h1 {
-            font-size: 1.9rem;
+            font-size: 1.8rem;
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
         }
-        .theme-btn {
+        .back-home, .theme-btn {
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 2rem;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 1.2rem;
             cursor: pointer;
             font-weight: 500;
             color: var(--text);
-        }
-        .back-home {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 2rem;
-            padding: 0.5rem 1rem;
             text-decoration: none;
-            color: var(--text);
-            font-weight: 500;
-            margin-right: 0.8rem;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .back-home:hover, .theme-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
         .tools-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
             gap: 1.8rem;
         }
-
         .card {
             background: var(--card-bg);
             border-radius: 1.5rem;
-            padding: 1.2rem 1.2rem 1.5rem;
+            padding: 1.2rem;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
-            transition: transform 0.1s ease;
+            transition: transform 0.15s ease, box-shadow 0.2s;
         }
         .card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
         }
         .card h3 {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
@@ -116,7 +125,11 @@
             color: var(--text);
             font-size: 0.9rem;
             outline: none;
-            transition: 0.1s;
+            transition: 0.15s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
         }
         button {
             background: var(--primary);
@@ -127,24 +140,21 @@
         }
         button:hover {
             background: var(--primary-hover);
+            transform: scale(0.98);
         }
         .result {
             background: var(--bg);
             border-radius: 1rem;
-            padding: 0.6rem;
+            padding: 0.7rem;
             font-size: 0.9rem;
             word-break: break-word;
-            margin-top: 0.3rem;
+            border-left: 3px solid var(--primary);
         }
         .flex-row {
             display: flex;
             gap: 0.6rem;
             flex-wrap: wrap;
             align-items: center;
-        }
-        hr {
-            border-color: var(--border);
-            margin: 0.5rem 0;
         }
         footer {
             text-align: center;
@@ -155,193 +165,86 @@
         @media (max-width: 760px) {
             body { padding: 1rem; }
             .tools-grid { grid-template-columns: 1fr; }
+            .header { flex-direction: column; align-items: stretch; }
+            .header-left { justify-content: space-between; }
+        }
+        .badge {
+            font-size: 0.75rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            padding: 0.2rem 0.6rem;
+            margin-left: 0.5rem;
         }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <div>
+        <div class="header-left">
             <a href="index.html" class="back-home">🏠 返回主页</a>
-            <span style="font-size: 1rem;">🧰 万能工具箱</span>
+            <h1>🧰 万能工具箱 <span class="badge">18合1</span></h1>
         </div>
         <button class="theme-btn" id="themeToggle">🌙 深色模式</button>
     </div>
     <div class="tools-grid">
-        
         <!-- 1. 待办清单 -->
-        <div class="card">
-            <h3>✓ 待办清单</h3>
-            <div class="tool-content">
-                <div class="flex-row">
-                    <input type="text" id="todoInput" placeholder="写一个任务...">
-                    <button id="addTodoBtn">➕ 添加</button>
-                </div>
-                <ul id="todoList" style="list-style: none; max-height: 180px; overflow-y: auto; padding-left: 0;"></ul>
-            </div>
-        </div>
-
+        <div class="card"><h3>✓ 待办清单</h3><div class="tool-content"><div class="flex-row"><input type="text" id="todoInput" placeholder="写一个任务..."><button id="addTodoBtn">➕ 添加</button></div><ul id="todoList" style="list-style: none; max-height: 180px; overflow-y: auto; padding-left: 0;"></ul></div></div>
         <!-- 2. 简易计算器 -->
-        <div class="card">
-            <h3>📱 简易计算器</h3>
-            <div class="tool-content">
-                <input type="text" id="calcInput" placeholder="表达式 (例: 12+8*2)" value="">
-                <div class="flex-row">
-                    <button id="calcBtn">= 计算</button>
-                    <button id="clearCalc">C 清空</button>
-                </div>
-                <div class="result" id="calcResult">结果: </div>
-            </div>
-        </div>
-
+        <div class="card"><h3>📱 简易计算器</h3><div class="tool-content"><input type="text" id="calcInput" placeholder="表达式 (例: 12+8*2)" value=""><div class="flex-row"><button id="calcBtn">= 计算</button><button id="clearCalc">C 清空</button></div><div class="result" id="calcResult">结果: </div></div></div>
         <!-- 3. 温度转换 -->
-        <div class="card">
-            <h3>🌡️ 温度转换</h3>
-            <div class="tool-content">
-                <input type="number" id="tempInput" placeholder="数值" value="25">
-                <select id="tempFrom">
-                    <option value="C">摄氏度 °C</option>
-                    <option value="F">华氏度 °F</option>
-                </select>
-                <span> → </span>
-                <select id="tempTo">
-                    <option value="F">华氏度 °F</option>
-                    <option value="C">摄氏度 °C</option>
-                </select>
-                <button id="convertTemp">转换</button>
-                <div class="result" id="tempResult">结果: 77 °F</div>
-            </div>
-        </div>
-
+        <div class="card"><h3>🌡️ 温度转换</h3><div class="tool-content"><input type="number" id="tempInput" placeholder="数值" value="25"><select id="tempFrom"><option value="C">摄氏度 °C</option><option value="F">华氏度 °F</option></select><span> → </span><select id="tempTo"><option value="F">华氏度 °F</option><option value="C">摄氏度 °C</option></select><button id="convertTemp">转换</button><div class="result" id="tempResult">结果: 77 °F</div></div></div>
         <!-- 4. 随机名言 -->
-        <div class="card">
-            <h3>📜 随机名言</h3>
-            <div class="tool-content">
-                <div class="result" id="quoteText" style="min-height: 70px;">点击按钮生成一句名言</div>
-                <button id="newQuoteBtn">✨ 随机一句</button>
-            </div>
-        </div>
-
+        <div class="card"><h3>📜 随机名言</h3><div class="tool-content"><div class="result" id="quoteText" style="min-height: 70px;">点击按钮生成一句名言</div><button id="newQuoteBtn">✨ 随机一句</button></div></div>
         <!-- 5. 访问计数器 -->
-        <div class="card">
-            <h3>👀 访问计数器</h3>
-            <div class="tool-content">
-                <div class="result" id="visitCount">本设备访问次数: --</div>
-                <button id="resetCountBtn">重置计数器</button>
-            </div>
-        </div>
-
+        <div class="card"><h3>👀 访问计数器</h3><div class="tool-content"><div class="result" id="visitCount">本设备访问次数: --</div><button id="resetCountBtn">重置计数器</button></div></div>
         <!-- 6. 倒计时器 -->
-        <div class="card">
-            <h3>⏳ 倒计时器 (秒)</h3>
-            <div class="tool-content">
-                <input type="number" id="countdownSeconds" placeholder="秒数" value="60">
-                <div class="flex-row">
-                    <button id="startCountdown">开始</button>
-                    <button id="stopCountdown">停止</button>
-                </div>
-                <div class="result" id="countdownDisplay">剩余: 0 秒</div>
-            </div>
-        </div>
-
+        <div class="card"><h3>⏳ 倒计时器 (秒)</h3><div class="tool-content"><input type="number" id="countdownSeconds" placeholder="秒数" value="60"><div class="flex-row"><button id="startCountdown">开始</button><button id="stopCountdown">停止</button></div><div class="result" id="countdownDisplay">剩余: 0 秒</div></div></div>
         <!-- 7. 文字计数器 -->
-        <div class="card">
-            <h3>📝 文字计数器</h3>
-            <div class="tool-content">
-                <textarea id="textCounterInput" rows="3" placeholder="输入一些文字..."></textarea>
-                <div class="result" id="textStats">字符数: 0 | 单词数: 0</div>
-            </div>
-        </div>
-
+        <div class="card"><h3>📝 文字计数器</h3><div class="tool-content"><textarea id="textCounterInput" rows="3" placeholder="输入一些文字..."></textarea><div class="result" id="textStats">字符数: 0 | 单词数: 0</div></div></div>
         <!-- 8. 颜色工具 -->
-        <div class="card">
-            <h3>🎨 颜色工具</h3>
-            <div class="tool-content">
-                <div class="flex-row">
-                    <input type="color" id="colorPicker" value="#3b82f6">
-                    <span id="colorCode">#3b82f6</span>
-                </div>
-                <button id="randomColorBtn">🎲 随机颜色</button>
-                <div class="result" id="colorDemo" style="height: 50px; background: #3b82f6; border-radius: 12px;"></div>
-            </div>
-        </div>
-
+        <div class="card"><h3>🎨 颜色工具</h3><div class="tool-content"><div class="flex-row"><input type="color" id="colorPicker" value="#3b82f6"><span id="colorCode">#3b82f6</span></div><button id="randomColorBtn">🎲 随机颜色</button><div class="result" id="colorDemo" style="height: 50px; background: #3b82f6; border-radius: 12px;"></div></div></div>
         <!-- 9. 长度转换 -->
-        <div class="card">
-            <h3>📏 长度转换</h3>
-            <div class="tool-content">
-                <input type="number" id="lengthVal" placeholder="数值" value="1">
-                <select id="lengthFrom">
-                    <option value="m">米(m)</option>
-                    <option value="ft">英尺(ft)</option>
-                    <option value="cm">厘米(cm)</option>
-                    <option value="in">英寸(in)</option>
-                </select>
-                <span>→</span>
-                <select id="lengthTo">
-                    <option value="ft">英尺(ft)</option>
-                    <option value="m">米(m)</option>
-                    <option value="cm">厘米(cm)</option>
-                    <option value="in">英寸(in)</option>
-                </select>
-                <button id="convertLength">转换</button>
-                <div class="result" id="lengthResult">结果: </div>
-            </div>
-        </div>
-
+        <div class="card"><h3>📏 长度转换</h3><div class="tool-content"><input type="number" id="lengthVal" placeholder="数值" value="1"><select id="lengthFrom"><option value="m">米(m)</option><option value="ft">英尺(ft)</option><option value="cm">厘米(cm)</option><option value="in">英寸(in)</option></select><span>→</span><select id="lengthTo"><option value="ft">英尺(ft)</option><option value="m">米(m)</option><option value="cm">厘米(cm)</option><option value="in">英寸(in)</option></select><button id="convertLength">转换</button><div class="result" id="lengthResult">结果: </div></div></div>
         <!-- 10. Markdown预览 -->
-        <div class="card">
-            <h3>📄 Markdown 预览</h3>
-            <div class="tool-content">
-                <textarea id="mdInput" rows="3" placeholder="# 标题\n**粗体**\n- 列表项"></textarea>
-                <div class="result" id="mdPreview" style="background: var(--bg); min-height: 100px;"></div>
-            </div>
-        </div>
-
+        <div class="card"><h3>📄 Markdown 预览</h3><div class="tool-content"><textarea id="mdInput" rows="3" placeholder="# 标题\n**粗体**\n- 列表项"></textarea><div class="result" id="mdPreview" style="background: var(--bg); min-height: 100px;"></div></div></div>
         <!-- 11. 随机密码生成 -->
-        <div class="card">
-            <h3>🔐 随机密码</h3>
-            <div class="tool-content">
-                <div class="flex-row">
-                    <input type="number" id="pwdLength" value="12" min="4" max="32">
-                    <button id="genPassword">生成密码</button>
-                </div>
-                <div class="result" id="passwordResult">点击生成</div>
-            </div>
-        </div>
+        <div class="card"><h3>🔐 随机密码</h3><div class="tool-content"><div class="flex-row"><input type="number" id="pwdLength" value="12" min="4" max="32"><button id="genPassword">生成密码</button></div><div class="result" id="passwordResult">点击生成</div></div></div>
+        <!-- 12. 随机数/骰子 -->
+        <div class="card"><h3>🎲 随机数/骰子</h3><div class="tool-content"><div class="flex-row"><span>最小值</span><input type="number" id="randMin" value="1"><span>最大值</span><input type="number" id="randMax" value="100"></div><button id="rollBtn">🎲 掷出随机数</button><div class="result" id="randomResult">结果: -</div></div></div>
 
-        <!-- 12. 随机数 -->
-        <div class="card">
-            <h3>🎲 随机数/骰子</h3>
-            <div class="tool-content">
-                <div class="flex-row">
-                    <span>最小值</span><input type="number" id="randMin" value="1">
-                    <span>最大值</span><input type="number" id="randMax" value="100">
-                </div>
-                <button id="rollBtn">🎲 掷出随机数</button>
-                <div class="result" id="randomResult">结果: -</div>
-            </div>
-        </div>
+        <!-- 13. BMI 计算器 -->
+        <div class="card"><h3>⚖️ BMI 计算器</h3><div class="tool-content"><div class="flex-row"><span>身高 (cm)</span><input type="number" id="bmiHeight" placeholder="身高" value="170"><span>体重 (kg)</span><input type="number" id="bmiWeight" placeholder="体重" value="65"></div><button id="calcBmi">计算 BMI</button><div class="result" id="bmiResult">BMI: --</div></div></div>
+        <!-- 14. 重量单位换算 -->
+        <div class="card"><h3>⚖️ 重量换算</h3><div class="tool-content"><div class="flex-row"><input type="number" id="weightValue" placeholder="数值" value="1"><select id="weightFrom"><option value="kg">千克 (kg)</option><option value="g">克 (g)</option><option value="lb">磅 (lb)</option><option value="oz">盎司 (oz)</option></select><span>→</span><select id="weightTo"><option value="lb">磅 (lb)</option><option value="kg">千克 (kg)</option><option value="g">克 (g)</option><option value="oz">盎司 (oz)</option></select><button id="convertWeight">转换</button></div><div class="result" id="weightResult">结果: --</div></div></div>
+        <!-- 15. 进制转换器 -->
+        <div class="card"><h3>🔢 进制转换</h3><div class="tool-content"><input type="text" id="numberInput" placeholder="输入数字" value="FF"><select id="inputBase"><option value="2">二进制</option><option value="8">八进制</option><option value="10">十进制</option><option value="16" selected>十六进制</option></select><span>→</span><select id="outputBase"><option value="10" selected>十进制</option><option value="2">二进制</option><option value="8">八进制</option><option value="16">十六进制</option></select><button id="convertBase">转换</button><div class="result" id="baseResult">结果: --</div></div></div>
+        <!-- 16. 秒表 -->
+        <div class="card"><h3>⏱️ 秒表</h3><div class="tool-content"><div class="result" id="stopwatchDisplay" style="font-size: 1.8rem; text-align: center; font-family: monospace;">00:00.00</div><div class="flex-row" style="justify-content: center;"><button id="stopwatchStart">开始</button><button id="stopwatchPause">暂停</button><button id="stopwatchReset">复位</button></div></div></div>
+        <!-- 17. 年龄计算器 -->
+        <div class="card"><h3>🎂 年龄计算器</h3><div class="tool-content"><label>出生日期：</label><input type="date" id="birthDate" value="2000-01-01"><button id="calcAge">计算年龄</button><div class="result" id="ageResult">年龄: --</div></div></div>
+        <!-- 18. 文本大小写转换 -->
+        <div class="card"><h3>🔤 文本大小写转换</h3><div class="tool-content"><textarea id="caseInput" rows="2" placeholder="输入文本..."></textarea><div class="flex-row"><button id="toUpper">全部大写</button><button id="toLower">全部小写</button><button id="toTitle">首字母大写</button><button id="toSentence">句子大小写</button></div><div class="result" id="caseOutput">转换结果会显示在这里</div></div></div>
     </div>
-    <footer>⚡ 所有工具均在浏览器本地运行 | 待办清单 & 访问计数会保存在设备中 | <a href="index.html" style="color: var(--primary);">🏠 返回主页</a></footer>
+    <footer>⚡ 所有工具均在浏览器本地运行 | 待办 & 访问计数会保存在设备中 | 点击卡片右上角工具可实时交互</footer>
 </div>
 
 <script>
-    // 深色模式
+    // ---------- 深色模式 (独立存储) ----------
     const themeBtn = document.getElementById('themeToggle');
     const root = document.body;
-    if (localStorage.getItem('darkModeTools') === 'true') {
+    if (localStorage.getItem('toolsTheme') === 'dark') {
         root.classList.add('dark');
         themeBtn.innerText = '☀️ 浅色模式';
     }
     themeBtn.addEventListener('click', () => {
         root.classList.toggle('dark');
         const isDark = root.classList.contains('dark');
-        localStorage.setItem('darkModeTools', isDark);
+        localStorage.setItem('toolsTheme', isDark ? 'dark' : 'light');
         themeBtn.innerText = isDark ? '☀️ 浅色模式' : '🌙 深色模式';
     });
 
-    // 待办清单
+    // ---------- 1. 待办清单 (独立存储) ----------
     let todos = JSON.parse(localStorage.getItem('todosTools')) || [];
     function renderTodos() {
         const listUl = document.getElementById('todoList');
@@ -385,51 +288,43 @@
     });
     renderTodos();
 
-    // 计算器
+    // 2. 计算器
     document.getElementById('calcBtn')?.addEventListener('click', () => {
         const expr = document.getElementById('calcInput').value;
         try {
             const result = Function('"use strict";return (' + expr + ')')();
-            document.getElementById('calcResult').innerText = '结果: ' + result;
+            document.getElementById('calcResult').innerHTML = `结果: ${result}`;
         } catch(e) {
-            document.getElementById('calcResult').innerText = '结果: 表达式错误';
+            document.getElementById('calcResult').innerHTML = '结果: 表达式错误';
         }
     });
     document.getElementById('clearCalc')?.addEventListener('click', () => {
         document.getElementById('calcInput').value = '';
-        document.getElementById('calcResult').innerText = '结果: ';
+        document.getElementById('calcResult').innerHTML = '结果: ';
     });
 
-    // 温度转换
+    // 3. 温度转换
     document.getElementById('convertTemp')?.addEventListener('click', () => {
         let val = parseFloat(document.getElementById('tempInput').value);
         if (isNaN(val)) val = 0;
         const from = document.getElementById('tempFrom').value;
         const to = document.getElementById('tempTo').value;
-        let celsius = 0;
-        if (from === 'C') celsius = val;
-        else celsius = (val - 32) * 5/9;
-        let result = 0;
-        if (to === 'C') result = celsius;
-        else result = celsius * 9/5 + 32;
+        let celsius = (from === 'C') ? val : (val - 32) * 5/9;
+        let result = (to === 'C') ? celsius : celsius * 9/5 + 32;
         document.getElementById('tempResult').innerHTML = `结果: ${result.toFixed(2)} °${to === 'C' ? 'C' : 'F'}`;
     });
     document.getElementById('convertTemp')?.click();
 
-    // 随机名言
-    const quotes = [
-        "代码改变世界，一行一行。", "简单是可靠的先决条件。", "保持好奇，持续创造。",
-        "GitHub Pages 让每个人拥有网站。", "今日事，今日毕。", "设计不只是看起来怎样，还在于如何工作。",
-        "与其等待机会，不如创造机会。", "不要害怕犯错，害怕停下。", "万物皆可自动化。"
-    ];
+    // 4. 随机名言
+    const quotes = ["代码改变世界，一行一行。","简单是可靠的先决条件。","保持好奇，持续创造。","GitHub Pages 让每个人拥有网站。","今日事，今日毕。","设计不只是看起来怎样，还在于如何工作。","与其等待机会，不如创造机会。","不要害怕犯错，害怕停下。","万物皆可自动化。","Less is more.","Talk is cheap. Show me the code."];
     document.getElementById('newQuoteBtn')?.addEventListener('click', () => {
         const idx = Math.floor(Math.random() * quotes.length);
         document.getElementById('quoteText').innerText = `“${quotes[idx]}”`;
     });
     document.getElementById('newQuoteBtn')?.click();
 
-    // 访问计数器
-    let visits = localStorage.getItem('visitCountTools') ? parseInt(localStorage.getItem('visitCountTools')) : 0;
+    // 5. 访问计数器
+    let visits = parseInt(localStorage.getItem('visitCountTools')) || 0;
     visits++;
     localStorage.setItem('visitCountTools', visits);
     document.getElementById('visitCount').innerText = `本设备访问次数: ${visits}`;
@@ -438,36 +333,23 @@
         document.getElementById('visitCount').innerText = '本设备访问次数: 0';
     });
 
-    // 倒计时
+    // 6. 倒计时
     let countdownInterval = null;
-    function stopCountdown() {
-        if (countdownInterval) clearInterval(countdownInterval);
-        countdownInterval = null;
-    }
+    function stopCountdown() { if (countdownInterval) clearInterval(countdownInterval); countdownInterval = null; }
     document.getElementById('startCountdown')?.addEventListener('click', () => {
         stopCountdown();
         let remaining = parseInt(document.getElementById('countdownSeconds').value);
-        if (isNaN(remaining)) remaining = 0;
+        if (isNaN(remaining) || remaining <= 0) { document.getElementById('countdownDisplay').innerText = '请设置正数秒数'; return; }
         const display = document.getElementById('countdownDisplay');
-        if (remaining <= 0) {
-            display.innerText = '剩余: 0 秒 (请设置正数)';
-            return;
-        }
         display.innerText = `剩余: ${remaining} 秒`;
         countdownInterval = setInterval(() => {
-            if (remaining <= 1) {
-                clearInterval(countdownInterval);
-                display.innerText = '⏰ 时间到!';
-                countdownInterval = null;
-            } else {
-                remaining--;
-                display.innerText = `剩余: ${remaining} 秒`;
-            }
+            if (remaining <= 1) { clearInterval(countdownInterval); display.innerText = '⏰ 时间到!'; countdownInterval = null; }
+            else { remaining--; display.innerText = `剩余: ${remaining} 秒`; }
         }, 1000);
     });
     document.getElementById('stopCountdown')?.addEventListener('click', stopCountdown);
 
-    // 文字计数器
+    // 7. 文字计数器
     const textArea = document.getElementById('textCounterInput');
     function updateTextStats() {
         const text = textArea.value;
@@ -478,14 +360,11 @@
     textArea?.addEventListener('input', updateTextStats);
     updateTextStats();
 
-    // 颜色工具
+    // 8. 颜色工具
     const colorPicker = document.getElementById('colorPicker');
     const colorCodeSpan = document.getElementById('colorCode');
     const colorDemoDiv = document.getElementById('colorDemo');
-    function updateColor(color) {
-        colorDemoDiv.style.background = color;
-        colorCodeSpan.innerText = color;
-    }
+    function updateColor(color) { colorDemoDiv.style.background = color; colorCodeSpan.innerText = color; }
     colorPicker?.addEventListener('input', (e) => updateColor(e.target.value));
     document.getElementById('randomColorBtn')?.addEventListener('click', () => {
         const randomHex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
@@ -493,11 +372,10 @@
         updateColor(randomHex);
     });
 
-    // 长度转换
+    // 9. 长度转换
     const lengthMap = { m:1, ft:3.28084, cm:100, in:39.3701 };
     document.getElementById('convertLength')?.addEventListener('click', () => {
-        let val = parseFloat(document.getElementById('lengthVal').value);
-        if (isNaN(val)) val = 0;
+        let val = parseFloat(document.getElementById('lengthVal').value) || 0;
         const from = document.getElementById('lengthFrom').value;
         const to = document.getElementById('lengthTo').value;
         const meters = val / lengthMap[from];
@@ -506,21 +384,15 @@
     });
     document.getElementById('convertLength')?.click();
 
-    // Markdown预览
+    // 10. Markdown预览
     const mdTextarea = document.getElementById('mdInput');
     const previewDiv = document.getElementById('mdPreview');
-    function updateMarkdown() {
-        if (typeof marked !== 'undefined') {
-            previewDiv.innerHTML = marked.parse(mdTextarea.value);
-        } else {
-            previewDiv.innerText = 'marked库加载中...';
-        }
-    }
+    function updateMarkdown() { if (typeof marked !== 'undefined') previewDiv.innerHTML = marked.parse(mdTextarea.value); else previewDiv.innerText = '加载 marked 库中...'; }
     mdTextarea?.addEventListener('input', updateMarkdown);
     mdTextarea.value = "# 欢迎\n**实时预览**\n- 列表1\n- 列表2";
     updateMarkdown();
 
-    // 随机密码
+    // 11. 随机密码
     function generatePassword(len) {
         const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*()_+";
         let pwd = "";
@@ -528,24 +400,85 @@
         return pwd;
     }
     document.getElementById('genPassword')?.addEventListener('click', () => {
-        let len = parseInt(document.getElementById('pwdLength').value);
-        if (isNaN(len)) len = 12;
+        let len = parseInt(document.getElementById('pwdLength').value) || 12;
         len = Math.min(40, Math.max(4, len));
         document.getElementById('passwordResult').innerText = generatePassword(len);
     });
     document.getElementById('genPassword')?.click();
 
-    // 随机数
+    // 12. 随机数
     document.getElementById('rollBtn')?.addEventListener('click', () => {
-        let min = parseInt(document.getElementById('randMin').value);
-        let max = parseInt(document.getElementById('randMax').value);
-        if(isNaN(min)) min=1;
-        if(isNaN(max)) max=100;
+        let min = parseInt(document.getElementById('randMin').value) || 1;
+        let max = parseInt(document.getElementById('randMax').value) || 100;
         if(min > max) [min,max] = [max,min];
         const rand = Math.floor(Math.random() * (max - min + 1) + min);
         document.getElementById('randomResult').innerText = `结果: ${rand}`;
     });
     document.getElementById('rollBtn')?.click();
+
+    // 13. BMI
+    document.getElementById('calcBmi')?.addEventListener('click', () => {
+        let h = parseFloat(document.getElementById('bmiHeight').value) / 100;
+        let w = parseFloat(document.getElementById('bmiWeight').value);
+        if (isNaN(h) || isNaN(w) || h<=0 || w<=0) { document.getElementById('bmiResult').innerText = '请输入有效数值'; return; }
+        let bmi = w / (h*h);
+        let advice = bmi < 18.5 ? '体重过轻' : (bmi < 24 ? '正常' : (bmi < 28 ? '超重' : '肥胖'));
+        document.getElementById('bmiResult').innerHTML = `BMI: ${bmi.toFixed(2)} (${advice})`;
+    });
+
+    // 14. 重量换算
+    const weightToKg = { kg:1, g:0.001, lb:0.453592, oz:0.0283495 };
+    document.getElementById('convertWeight')?.addEventListener('click', () => {
+        let val = parseFloat(document.getElementById('weightValue').value) || 0;
+        const from = document.getElementById('weightFrom').value;
+        const to = document.getElementById('weightTo').value;
+        const kg = val * weightToKg[from];
+        const result = kg / weightToKg[to];
+        document.getElementById('weightResult').innerText = `结果: ${result.toFixed(4)} ${to}`;
+    });
+
+    // 15. 进制转换
+    document.getElementById('convertBase')?.addEventListener('click', () => {
+        let num = document.getElementById('numberInput').value.trim();
+        let fromBase = parseInt(document.getElementById('inputBase').value);
+        let toBase = parseInt(document.getElementById('outputBase').value);
+        try {
+            let decimal = parseInt(num, fromBase);
+            if (isNaN(decimal)) throw new Error();
+            document.getElementById('baseResult').innerText = `结果: ${decimal.toString(toBase).toUpperCase()}`;
+        } catch(e) { document.getElementById('baseResult').innerText = '转换错误，请检查输入格式'; }
+    });
+
+    // 16. 秒表
+    let swInterval = null, swTime = 0;
+    const swDisplay = document.getElementById('stopwatchDisplay');
+    function updateSw() { let m = Math.floor(swTime/6000), s = Math.floor((swTime%6000)/100), cs = swTime%100; swDisplay.innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}.${cs.toString().padStart(2,'0')}`; }
+    document.getElementById('stopwatchStart')?.addEventListener('click', () => { if(swInterval) return; swInterval = setInterval(() => { swTime++; updateSw(); }, 10); });
+    document.getElementById('stopwatchPause')?.addEventListener('click', () => { if(swInterval) clearInterval(swInterval); swInterval = null; });
+    document.getElementById('stopwatchReset')?.addEventListener('click', () => { if(swInterval) clearInterval(swInterval); swInterval = null; swTime = 0; updateSw(); });
+    updateSw();
+
+    // 17. 年龄计算
+    document.getElementById('calcAge')?.addEventListener('click', () => {
+        let birth = new Date(document.getElementById('birthDate').value);
+        let today = new Date();
+        if (isNaN(birth.getTime())) { document.getElementById('ageResult').innerText = '请选择有效日期'; return; }
+        let years = today.getFullYear() - birth.getFullYear();
+        let months = today.getMonth() - birth.getMonth();
+        let days = today.getDate() - birth.getDate();
+        if (days < 0) { months--; let prevMonth = new Date(today.getFullYear(), today.getMonth(), 0); days += prevMonth.getDate(); }
+        if (months < 0) { years--; months += 12; }
+        document.getElementById('ageResult').innerHTML = `年龄: ${years} 岁 ${months} 月 ${days} 天`;
+    });
+
+    // 18. 文本大小写转换
+    const caseInput = document.getElementById('caseInput');
+    const caseOutput = document.getElementById('caseOutput');
+    function applyCase(transform) { caseOutput.innerText = transform(caseInput.value); }
+    document.getElementById('toUpper')?.addEventListener('click', () => applyCase(s => s.toUpperCase()));
+    document.getElementById('toLower')?.addEventListener('click', () => applyCase(s => s.toLowerCase()));
+    document.getElementById('toTitle')?.addEventListener('click', () => applyCase(s => s.replace(/\b\w/g, c => c.toUpperCase())));
+    document.getElementById('toSentence')?.addEventListener('click', () => applyCase(s => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()));
 </script>
 </body>
 </html>
