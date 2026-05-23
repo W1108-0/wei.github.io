@@ -43,7 +43,6 @@
             line-height: 1.5;
         }
 
-        /* 动态光晕背景 */
         .bg-glow {
             position: fixed;
             top: 0;
@@ -64,7 +63,38 @@
             padding: 2rem 1.5rem;
         }
 
-        /* 头部 */
+        /* 头部按钮组 */
+        .header-buttons {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.8rem;
+            z-index: 100;
+        }
+        .nav-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 2rem;
+            padding: 0.4rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+            box-shadow: var(--shadow);
+            text-decoration: none;
+        }
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* 头部标题区 */
         .header {
             text-align: center;
             margin-bottom: 3rem;
@@ -82,30 +112,6 @@
             color: var(--text-light);
             margin-top: 0.75rem;
             font-size: 1.1rem;
-        }
-        .theme-toggle {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 2rem;
-            padding: 0.4rem 1rem;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            z-index: 100;
-            box-shadow: var(--shadow);
-            transition: all 0.2s;
-        }
-        .theme-toggle:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
         }
 
         /* 统计卡片 */
@@ -235,12 +241,17 @@
             .container { padding: 1.5rem; }
             .software-grid { grid-template-columns: 1fr; }
             .stats { gap: 1rem; }
+            .header-buttons { top: 0.5rem; right: 0.5rem; }
+            .nav-btn { padding: 0.3rem 0.8rem; font-size: 0.8rem; }
         }
     </style>
 </head>
 <body>
 <div class="bg-glow"></div>
-<button class="theme-toggle" id="themeToggle">🌙 深色模式</button>
+<div class="header-buttons">
+    <a href="index.html" class="nav-btn">🏠 返回主页</a>
+    <button class="nav-btn" id="themeToggle">🌙 深色模式</button>
+</div>
 <div class="container">
     <div class="header">
         <h1>🛡️ 安全工具箱</h1>
@@ -274,7 +285,7 @@
                 <li>💾 原始 EXE 自动备份并隐藏，可恢复</li>
                 <li>🎨 尽量保持原始程序图标</li>
             </ul>
-            <a href="https://github.com/W1108-0/wenjian/raw/refs/heads/main/exelock.7z" class="download-link" download>📥 下载 (12.7 MB)</a>
+            <a href="https://gh-proxy.org/https://github.com/W1108-0/wenjian/raw/refs/heads/main/exelock.7z" class="download-link" download>📥 下载 (12.7 MB)</a>
         </div>
 
         <!-- 图像隐写术工具 -->
@@ -291,7 +302,7 @@
                 <li>📊 LSB 分布统计，判断图片异常</li>
                 <li>💾 保留原始 EXIF 元数据</li>
             </ul>
-            <a href="https://github.com/W1108-0/wenjian/raw/refs/heads/main/steganography_gui.7z" class="download-link" download>📥 下载 (24.8 MB)</a>
+            <a href="https://gh-proxy.org/https://github.com/W1108-0/wenjian/raw/refs/heads/main/steganography_gui.7z" class="download-link" download>📥 下载 (24.8 MB)</a>
         </div>
 
         <!-- 中文加密工具 (RSA+AES) -->
@@ -309,7 +320,7 @@
                 <li>✍️ 数字签名（PSS 方案，防篡改）</li>
                 <li>⏱️ 私钥自动锁定（5分钟无操作）</li>
             </ul>
-            <a href="https://github.com/W1108-0/wenjian/raw/refs/heads/main/%E4%B8%AD%E6%96%87%E5%8A%A0%E5%AF%86%E5%B7%A5%E5%85%B7.7z" class="download-link" download>📥 下载 (11.4 MB)</a>
+            <a href="https://gh-proxy.org/https://github.com/W1108-0/wenjian/raw/refs/heads/main/%E4%B8%AD%E6%96%87%E5%8A%A0%E5%AF%86%E5%B7%A5%E5%85%B7.7z" class="download-link" download>📥 下载 (11.4 MB)</a>
         </div>
 
         <!-- 图片隐写文件（增强版） -->
@@ -326,7 +337,7 @@
                 <li>🔐 可选加密 + 压缩，提高安全性</li>
                 <li>🖼️ 载体图片格式：PNG / BMP（无损）</li>
             </ul>
-            <a href="https://github.com/W1108-0/wenjian/raw/refs/heads/main/%E5%9B%BE%E7%89%87%E9%9A%90%E5%86%99%E6%96%87%E4%BB%B6.7z" class="download-link" download>📥 下载 (22.8 MB)</a>
+            <a href="https://gh-proxy.org/https://github.com/W1108-0/wenjian/raw/refs/heads/main/%E5%9B%BE%E7%89%87%E9%9A%90%E5%86%99%E6%96%87%E4%BB%B6.7z" class="download-link" download>📥 下载 (22.8 MB)</a>
         </div>
     </div>
 
@@ -340,14 +351,14 @@
     // 深色模式切换
     const themeToggle = document.getElementById('themeToggle');
     const root = document.body;
-    if (localStorage.getItem('siteTheme') === 'dark') {
+    if (localStorage.getItem('releaseTheme') === 'dark') {
         root.classList.add('dark');
         themeToggle.innerHTML = '☀️ 浅色模式';
     }
     themeToggle.addEventListener('click', () => {
         root.classList.toggle('dark');
         const isDark = root.classList.contains('dark');
-        localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
+        localStorage.setItem('releaseTheme', isDark ? 'dark' : 'light');
         themeToggle.innerHTML = isDark ? '☀️ 浅色模式' : '🌙 深色模式';
     });
 </script>
