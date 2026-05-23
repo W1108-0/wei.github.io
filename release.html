@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>软件发布站 · 安全工具箱</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+            --text-light: #475569;
+            --border: #e2e8f0;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.02);
+            --radius: 1.5rem;
+            --badge-bg: #e0f2fe;
+            --badge-text: #0369a1;
+        }
+
+        body.dark {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f1f5f9;
+            --text-light: #94a3b8;
+            --border: #334155;
+            --badge-bg: #1e293b;
+            --badge-text: #7dd3fc;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            transition: background 0.2s, color 0.2s;
+            line-height: 1.5;
+        }
+
+        /* 动态光晕背景 */
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.08) 0%, rgba(139, 92, 246, 0.05) 45%, transparent 70%);
+        }
+
+        body.dark .bg-glow {
+            background: radial-gradient(circle at 80% 30%, rgba(56, 189, 248, 0.08) 0%, rgba(139, 92, 246, 0.05) 60%, transparent 90%);
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* 头部 */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+        }
+        .header p {
+            color: var(--text-light);
+            margin-top: 0.75rem;
+            font-size: 1.1rem;
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 2rem;
+            padding: 0.4rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            z-index: 100;
+            box-shadow: var(--shadow);
+            transition: all 0.2s;
+        }
+        .theme-toggle:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* 统计卡片 */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 0.8rem 1.8rem;
+            text-align: center;
+            backdrop-filter: blur(8px);
+            box-shadow: var(--shadow);
+        }
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* 软件网格 */
+        .software-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        .software-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            transition: all 0.2s;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(4px);
+        }
+        .software-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .card-icon {
+            font-size: 2rem;
+        }
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        .card-badge {
+            background: var(--badge-bg);
+            color: var(--badge-text);
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 1rem;
+            margin-left: 0.5rem;
+        }
+        .card-desc {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        .feature-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+        .feature-list li {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            padding: 0.25rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .download-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 2rem;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            margin-top: 0.5rem;
+            width: fit-content;
+        }
+        .download-link:hover {
+            background: var(--primary-hover);
+            transform: scale(0.98);
+        }
+        .info-text {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 1.5rem; }
+            .software-grid { grid-template-columns: 1fr; }
+            .stats { gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<button class="theme-toggle" id="themeToggle">🌙 深色模式</button>
+<div class="container">
+    <div class="header">
+        <h1>🛡️ 安全工具箱</h1>
+        <p>加密 · 隐写 · 文件保护 —— 一站式安全工具集</p>
+    </div>
+
+    <!-- 统计卡片 -->
+    <div class="stats" id="statsContainer">
+        <div class="stat-card"><div class="stat-number">4</div><div class="stat-label">软件工具</div></div>
+        <div class="stat-card"><div class="stat-number">~60</div><div class="stat-label">MB 总大小</div></div>
+        <div class="stat-card"><div class="stat-number">免费</div><div class="stat-label">开源/免费使用</div></div>
+    </div>
+
+    <div class="info-text">
+        💡 <strong>使用提示</strong>：所有软件均为压缩包格式（.7z），下载后请使用 7-Zip 或 WinRAR 解压。建议解压前先使用杀毒软件扫描。<br>
+        🔗 <strong>项目仓库</strong>：<a href="https://github.com/W1108-0/wenjian" target="_blank" style="color: var(--primary);">https://github.com/W1108-0/wenjian</a>
+    </div>
+
+    <div class="software-grid">
+        <!-- EXE加密工具 -->
+        <div class="software-card">
+            <div class="card-header">
+                <span class="card-icon">🔐</span>
+                <span class="card-title">EXE 加密工具</span>
+                <span class="card-badge">v2.0</span>
+            </div>
+            <div class="card-desc">对 Windows 可执行文件进行加密保护，支持密码验证、运行时段限制、一机一码绑定（机器码）等三重防护机制。加密后保留原目录结构，不影响 DLL 及配置文件。</div>
+            <ul class="feature-list">
+                <li>🔒 密码保护 | ⏰ 时段限制 | 🖥️ 一机一码（机器码绑定）</li>
+                <li>📁 仅加密主 EXE，保留其他文件（DLL/配置等）不变</li>
+                <li>💾 原始 EXE 自动备份并隐藏，可恢复</li>
+                <li>🎨 尽量保持原始程序图标</li>
+            </ul>
+            <a href="https://github.com/W1108-0/wenjian/raw/refs/heads/main/exelock.7z" class="download-link" download>📥 下载 (12.7 MB)</a>
+        </div>
+
+        <!-- 图像隐写术工具 -->
+        <div class="software-card">
+            <div class="card-header">
+                <span class="card-icon">🖼️</span>
+                <span class="card-title">图像隐写术工具</span>
+                <span class="card-badge">v2.1</span>
+            </div>
+            <div class="card-desc">基于 LSB（最低有效位）隐写术，将任意文件（文本、图片、压缩包等）隐藏到 PNG/BMP 图片中，视觉上完全无变化。支持加密、压缩和元数据保留。</div>
+            <ul class="feature-list">
+                <li>🔍 任意文件 → 图片 | 支持检测已有隐写图片</li>
+                <li>🔐 AES 加密保护 | 🗜️ 自动压缩隐藏内容</li>
+                <li>📊 LSB 分布统计，判断图片异常</li>
+                <li>💾 保留原始 EXIF 元数据</li>
+            </ul>
+            <a href="https://github.com/W1108-0/wenjian/raw/refs/heads/main/steganography_gui.7z" class="download-link" download>📥 下载 (24.8 MB)</a>
+        </div>
+
+        <!-- 中文加密工具 (RSA+AES) -->
+        <div class="software-card">
+            <div class="card-header">
+                <span class="card-icon">🔏</span>
+                <span class="card-title">中文加密工具</span>
+                <span class="card-badge">v1.0</span>
+            </div>
+            <div class="card-desc">基于 RSA + AES-256-GCM 混合加密的安全通信工具。文本可转拼音加密，支持文件加密、数字签名、密钥管理，提供完整的端到端加密方案。</div>
+            <ul class="feature-list">
+                <li>🔑 RSA-2048 + AES-256-GCM 混合加密</li>
+                <li>📝 中文智能处理（拼音转换/保留原文）</li>
+                <li>📄 任意文件加密（流式处理，内存占用低）</li>
+                <li>✍️ 数字签名（PSS 方案，防篡改）</li>
+                <li>⏱️ 私钥自动锁定（5分钟无操作）</li>
+            </ul>
+            <a href="https://github.com/W1108-0/wenjian/raw/refs/heads/main/%E4%B8%AD%E6%96%87%E5%8A%A0%E5%AF%86%E5%B7%A5%E5%85%B7.7z" class="download-link" download>📥 下载 (11.4 MB)</a>
+        </div>
+
+        <!-- 图片隐写文件（增强版） -->
+        <div class="software-card">
+            <div class="card-header">
+                <span class="card-icon">🗃️</span>
+                <span class="card-title">图片隐写文件</span>
+                <span class="card-badge">增强版</span>
+            </div>
+            <div class="card-desc">图像隐写术工具的增强版本，优化了文件隐藏和提取的稳定性，支持更大文件嵌入，并提供更完善的错误检测与恢复机制。</div>
+            <ul class="feature-list">
+                <li>📁 支持隐藏任意类型文件（文本/图片/视频/压缩包）</li>
+                <li>🔍 智能检测图片是否包含隐藏数据</li>
+                <li>🔐 可选加密 + 压缩，提高安全性</li>
+                <li>🖼️ 载体图片格式：PNG / BMP（无损）</li>
+            </ul>
+            <a href="https://github.com/W1108-0/wenjian/raw/refs/heads/main/%E5%9B%BE%E7%89%87%E9%9A%90%E5%86%99%E6%96%87%E4%BB%B6.7z" class="download-link" download>📥 下载 (22.8 MB)</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>⚠️ 安全提醒：本页面提供的软件仅供学习交流使用，请勿用于非法用途。部分软件可能被安全软件误报，请添加信任后使用。</p>
+        <p style="margin-top: 8px;">© 2026 软件发布站 | 项目地址：<a href="https://github.com/W1108-0/wenjian" target="_blank" style="color: var(--primary);">W1108-0/wenjian</a></p>
+    </footer>
+</div>
+
+<script>
+    // 深色模式切换
+    const themeToggle = document.getElementById('themeToggle');
+    const root = document.body;
+    if (localStorage.getItem('siteTheme') === 'dark') {
+        root.classList.add('dark');
+        themeToggle.innerHTML = '☀️ 浅色模式';
+    }
+    themeToggle.addEventListener('click', () => {
+        root.classList.toggle('dark');
+        const isDark = root.classList.contains('dark');
+        localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
+        themeToggle.innerHTML = isDark ? '☀️ 浅色模式' : '🌙 深色模式';
+    });
+</script>
+</body>
+</html>
