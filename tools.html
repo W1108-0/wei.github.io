@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>万能工具箱 · 完整增强版</title>
+    <title>万能工具箱 · 单列增强版</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         * {
@@ -21,7 +21,7 @@
             --primary: #3b82f6;
             --primary-hover: #2563eb;
             --shadow: 0 4px 12px rgba(0,0,0,0.05);
-            --radius: 1.2rem;
+            --radius: 1rem;
         }
 
         body.dark {
@@ -41,10 +41,11 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
+        /* 头部 */
         .header {
             display: flex;
             justify-content: space-between;
@@ -85,10 +86,51 @@
             color: white;
             border-color: var(--primary);
         }
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 1.2rem;
+
+        /* 搜索栏 */
+        .search-bar {
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .search-bar input {
+            flex: 1;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 2rem;
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+            color: var(--text);
+            outline: none;
+        }
+        .search-bar input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+        }
+        .search-bar button {
+            background: var(--primary);
+            border: none;
+            border-radius: 2rem;
+            padding: 0.6rem 1rem;
+            color: white;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .search-bar button:hover {
+            background: var(--primary-hover);
+        }
+        .tools-count {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        /* 单列布局 */
+        .tools-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
         .tool-card {
             background: var(--card-bg);
@@ -228,7 +270,6 @@
         }
         @media (max-width: 700px) {
             body { padding: 1rem; }
-            .tools-grid { grid-template-columns: 1fr; }
             .calc-buttons { grid-template-columns: repeat(4, 1fr); }
         }
     </style>
@@ -238,18 +279,27 @@
     <div class="header">
         <div class="header-left">
             <a href="index.html" class="back-home">🏠 返回主页</a>
-            <h1>🧰 万能工具箱 <span class="badge">25合1 · 增强访客信息</span></h1>
+            <h1>🧰 万能工具箱 <span class="badge">单列 · 25合1</span></h1>
         </div>
         <button class="theme-btn" id="themeToggle">🌙 深色模式</button>
     </div>
-    <div class="tools-grid" id="toolsGrid"></div>
-    <footer>⚡ 点击任意工具标题展开 | 所有工具本地运行 | “我的访问信息”仅展示，不存储任何数据 | 支持手动刷新</footer>
+
+    <!-- 搜索筛选栏 -->
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="🔍 输入工具名称进行筛选..." autocomplete="off">
+        <button id="clearSearchBtn">✖️ 清空</button>
+    </div>
+    <div class="tools-count" id="toolsCount"></div>
+
+    <!-- 工具列表容器（单列） -->
+    <div class="tools-list" id="toolsList"></div>
+
+    <footer>⚡ 点击任意工具标题展开 | 所有工具本地运行 | 支持实时搜索筛选</footer>
 </div>
 
 <script>
-    // 工具数据定义 (共25个)
+    // ==================== 工具数据定义（25个） ====================
     const toolsData = [
-        // 原有核心工具
         { id: "calculator", icon: "📱", name: "增强计算器", html: `
             <div class="mode-switch flex-row"><span>模式：</span>
                 <select id="calcMode"><option value="basic">标准模式</option><option value="sci">科学模式</option></select>
@@ -269,7 +319,6 @@
             <div class="flex-row"><span>长度：</span><input type="number" id="pwdLength" value="12" min="4" max="32"><button id="genPassword">生成密码</button><button id="copyPassword">📋 复制</button></div>
             <div class="result" id="passwordResult">点击生成</div>
         `, init: initPassword },
-        // 增强的访客信息卡片
         { id: "visitor", icon: "🌍", name: "我的访问信息", html: `
             <div id="visitorInfoContainer">
                 <div class="result" id="visitorInfoContent" style="min-height: 120px;">正在获取你的网络信息...</div>
@@ -362,7 +411,6 @@
             <div class="flex-row"><button id="toUpper">全部大写</button><button id="toLower">全部小写</button><button id="toTitle">首字母大写</button><button id="toSentence">句子大小写</button><button id="copyCaseResult">📋 复制结果</button></div>
             <div class="result" id="caseOutput">转换结果会显示在这里</div>
         `, init: initCase },
-        // 实用工具类（6个）
         { id: "unitConverter", icon: "📐", name: "综合单位换算", html: `
             <div class="flex-row"><input type="number" id="unitValue" placeholder="数值" value="1"><select id="unitCategory"><option value="area">面积</option><option value="volume">体积</option><option value="speed">速度</option></select></div>
             <div class="flex-row"><select id="unitFrom"></select><span>→</span><select id="unitTo"></select><button id="convertUnit">转换</button></div>
@@ -396,7 +444,6 @@
             <div class="flex-row"><span>生成数量</span><input type="number" id="uuidCount" value="1" min="1" max="10"><button id="genUuid">生成 UUID</button></div>
             <div class="result" id="uuidResult">点击生成</div>
         `, init: initUuidTool },
-        // 趣味娱乐类（5个）
         { id: "dice", icon: "🎲", name: "掷骰子", html: `
             <div class="flex-row"><span>骰子类型</span><select id="diceType"><option value="4">d4</option><option value="6" selected>d6</option><option value="8">d8</option><option value="10">d10</option><option value="12">d12</option><option value="20">d20</option></select><button id="rollDice">掷骰</button></div>
             <div class="result" id="diceResult">结果: --</div>
@@ -423,32 +470,43 @@
         `, init: initTypingTest }
     ];
 
-    // 生成卡片
-    const grid = document.getElementById('toolsGrid');
-    toolsData.forEach(tool => {
-        const card = document.createElement('div');
-        card.className = 'tool-card';
-        card.id = `tool-${tool.id}`;
-        card.innerHTML = `
-            <div class="tool-header">
-                <div class="tool-title"><span class="tool-icon">${tool.icon}</span> ${tool.name}</div>
-                <span class="expand-icon">▼</span>
-            </div>
-            <div class="tool-content">
-                <div class="tool-body">${tool.html}</div>
-            </div>
-        `;
-        grid.appendChild(card);
-        const header = card.querySelector('.tool-header');
-        header.addEventListener('click', (e) => {
-            e.stopPropagation();
-            card.classList.toggle('expanded');
+    // 渲染工具列表（支持过滤）
+    let currentFilter = '';
+    function renderTools() {
+        const container = document.getElementById('toolsList');
+        if (!container) return;
+        const filtered = toolsData.filter(tool => 
+            tool.name.toLowerCase().includes(currentFilter.toLowerCase())
+        );
+        document.getElementById('toolsCount').innerText = `共 ${filtered.length} 个工具 (总计 ${toolsData.length})`;
+        container.innerHTML = '';
+        filtered.forEach(tool => {
+            const card = document.createElement('div');
+            card.className = 'tool-card';
+            card.id = `tool-${tool.id}`;
+            card.setAttribute('data-name', tool.name);
+            card.innerHTML = `
+                <div class="tool-header">
+                    <div class="tool-title"><span class="tool-icon">${tool.icon}</span> ${tool.name}</div>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="tool-content">
+                    <div class="tool-body">${tool.html}</div>
+                </div>
+            `;
+            container.appendChild(card);
+            const header = card.querySelector('.tool-header');
+            header.addEventListener('click', (e) => {
+                e.stopPropagation();
+                card.classList.toggle('expanded');
+            });
+            // 执行初始化函数（确保元素存在后绑定）
+            if (tool.init) tool.init();
         });
-    });
+    }
 
-    // ==================== 工具初始化函数 ====================
-    // 核心工具
-    function initCalculator() { /* 原有代码，省略保持简洁，实际应保留完整实现 */ 
+    // ==================== 所有工具的初始化函数（完整实现） ====================
+    function initCalculator() {
         const input = document.getElementById('calcInput');
         const resultDiv = document.getElementById('calcResult');
         const modeSelect = document.getElementById('calcMode');
@@ -529,12 +587,9 @@
         copyBtn.onclick = () => { const pwd = resultSpan.innerText; if (pwd && pwd !== '请至少选择一种字符类型') { navigator.clipboard.writeText(pwd); alert('密码已复制到剪贴板'); } };
         generate();
     }
-    // 增强的访客信息函数（显示更多内容，支持刷新）
     function initVisitorInfo() {
         const infoDiv = document.getElementById('visitorInfoContent');
         if (!infoDiv) return;
-        
-        // 获取设备信息（不涉及网络）
         function getDeviceInfo() {
             const ua = navigator.userAgent;
             let browser = '未知', os = '未知';
@@ -543,31 +598,24 @@
             else if (ua.includes('Safari')) browser = 'Safari';
             else if (ua.includes('Edge')) browser = 'Edge';
             else if (ua.includes('MSIE') || ua.includes('Trident')) browser = 'IE';
-            
             if (ua.includes('Windows')) os = 'Windows';
             else if (ua.includes('Mac')) os = 'macOS';
             else if (ua.includes('Linux')) os = 'Linux';
             else if (ua.includes('Android')) os = 'Android';
             else if (ua.includes('iOS') || ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
-            
             const screen = `${window.screen.width} x ${window.screen.height}`;
             const language = navigator.language || '未知';
             return { browser, os, screen, language };
         }
-        
         async function fetchAndDisplay() {
             infoDiv.innerHTML = '正在获取网络信息...';
             try {
                 const geoResponse = await fetch('https://ipapi.co/json/');
                 if (!geoResponse.ok) throw new Error(`HTTP ${geoResponse.status}`);
                 const geoData = await geoResponse.json();
-                
                 if (geoData && geoData.ip) {
                     const fullIp = geoData.ip;
-                    let partialIp = fullIp.includes('.') 
-                        ? fullIp.split('.').slice(0,2).join('.') + '.***.***' 
-                        : (fullIp.includes(':') ? fullIp.split(':').slice(0,2).join(':') + ':****:****:****:****' : fullIp);
-                    
+                    let partialIp = fullIp.includes('.') ? fullIp.split('.').slice(0,2).join('.') + '.***.***' : (fullIp.includes(':') ? fullIp.split(':').slice(0,2).join(':') + ':****:****:****:****' : fullIp);
                     const city = geoData.city || '未知';
                     const region = geoData.region || '未知';
                     const country = geoData.country_name || '未知';
@@ -578,7 +626,6 @@
                     const timezone = geoData.timezone || '未知';
                     const utcOffset = geoData.utc_offset || '未知';
                     const device = getDeviceInfo();
-                    
                     infoDiv.innerHTML = `
                         <div><strong>📡 网络信息</strong></div>
                         <div> 🔹 部分 IP：${partialIp}</div>
@@ -601,16 +648,13 @@
                     infoDiv.innerHTML = '⚠️ 未能获取访问信息，请稍后重试。';
                 }
             } catch (error) {
-                console.error('访客信息获取失败:', error);
                 infoDiv.innerHTML = '⚠️ 获取失败，可能是网络问题或 API 限制。请点击刷新按钮重试。';
             }
         }
-        
         fetchAndDisplay();
         const refreshBtn = document.getElementById('refreshVisitorInfo');
         if (refreshBtn) refreshBtn.addEventListener('click', (e) => { e.preventDefault(); fetchAndDisplay(); });
     }
-    // 其余工具函数（为保证完整性，继续提供简化版，实际可保留原有逻辑）
     function initTodo() {
         let todos = JSON.parse(localStorage.getItem('todosTools')) || [];
         function renderTodos() {
@@ -669,7 +713,6 @@
         const input=document.getElementById('caseInput'), output=document.getElementById('caseOutput'); const apply=(fn)=>{ output.innerText=fn(input.value); };
         document.getElementById('toUpper').onclick=()=>apply(s=>s.toUpperCase()); document.getElementById('toLower').onclick=()=>apply(s=>s.toLowerCase()); document.getElementById('toTitle').onclick=()=>apply(s=>s.replace(/\b\w/g,c=>c.toUpperCase())); document.getElementById('toSentence').onclick=()=>apply(s=>s.charAt(0).toUpperCase()+s.slice(1).toLowerCase()); document.getElementById('copyCaseResult').onclick=()=>{ if(output.innerText && output.innerText!=='转换结果会显示在这里'){ navigator.clipboard.writeText(output.innerText); alert('已复制转换结果'); } };
     }
-    // 实用工具
     function initUnitConverter() {
         const catMap={ area:{ name:"面积", units:{ "平方米":1, "平方英尺":10.7639, "亩":0.0015 } }, volume:{ name:"体积", units:{ "升":1, "加仑(美)":0.264172, "立方米":0.001 } }, speed:{ name:"速度", units:{ "km/h":1, "mph":0.621371 } } };
         const catSel=document.getElementById('unitCategory'), fromSel=document.getElementById('unitFrom'), toSel=document.getElementById('unitTo'), convertBtn=document.getElementById('convertUnit'), valInp=document.getElementById('unitValue'), resDiv=document.getElementById('unitResult');
@@ -692,7 +735,6 @@
     function initUuidTool() {
         const gen=()=>{ return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{ const r=Math.random()*16|0; const v=c==='x'?r:(r&0x3|0x8); return v.toString(16); }); }; const btn=document.getElementById('genUuid'); btn.onclick=()=>{ let cnt=parseInt(document.getElementById('uuidCount').value)||1; if(cnt<1) cnt=1; if(cnt>10) cnt=10; const uuids=[]; for(let i=0;i<cnt;i++) uuids.push(gen()); document.getElementById('uuidResult').innerText=uuids.join('\n'); };
     }
-    // 趣味工具
     function initDice() { const btn=document.getElementById('rollDice'); btn.onclick=()=>{ const type=parseInt(document.getElementById('diceType').value); const result=Math.floor(Math.random()*type)+1; document.getElementById('diceResult').innerText=`结果: ${result} (d${type})`; }; }
     function initCoin() { const btn=document.getElementById('flipCoin'); btn.onclick=()=>{ const result=Math.random()<0.5?'正面':'反面'; const emoji=result==='正面'?'🪙 正面':'💰 反面'; document.getElementById('coinResult').innerHTML=`${emoji}<br>${result}`; }; }
     function initLottery() { const btn=document.getElementById('drawLottery'); btn.onclick=()=>{ let itemsStr=document.getElementById('lotteryItems').value; if(!itemsStr.trim()) itemsStr='一等奖,二等奖,三等奖,谢谢参与'; const items=itemsStr.split(',').map(s=>s.trim()); if(items.length===0){ document.getElementById('lotteryResult').innerText='请至少输入一个选项'; return; } const randomIndex=Math.floor(Math.random()*items.length); const result=items[randomIndex]; document.getElementById('lotteryResult').innerHTML=`🎉 抽中：${result} 🎉`; }; }
@@ -722,50 +764,33 @@
         resetTest();
     }
 
-    // 执行所有初始化
-    initCalculator();
-    initPassword();
-    initVisitorInfo();
-    initTodo();
-    initTemp();
-    initQuote();
-    initCounter();
-    initCountdown();
-    initTextStats();
-    initColorTool();
-    initLength();
-    initMarkdown();
-    initRandomNum();
-    initBMI();
-    initWeight();
-    initBase();
-    initStopwatch();
-    initAge();
-    initCase();
-    initUnitConverter();
-    initMortgage();
-    initDateCalc();
-    initJsonTool();
-    initBase64Tool();
-    initUuidTool();
-    initDice();
-    initCoin();
-    initLottery();
-    initGuessNumber();
-    initTypingTest();
-
-    // 深色模式
-    const themeBtn = document.getElementById('themeToggle');
-    const rootBody = document.body;
-    if (localStorage.getItem('toolsTheme') === 'dark') {
-        rootBody.classList.add('dark');
-        themeBtn.innerText = '☀️ 浅色模式';
+    // 搜索筛选逻辑
+    const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearSearchBtn');
+    function filterTools() {
+        currentFilter = searchInput.value;
+        renderTools();
     }
-    themeBtn.addEventListener('click', () => {
+    searchInput.addEventListener('input', filterTools);
+    clearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        filterTools();
+    });
+    // 初始渲染
+    renderTools();
+
+    // 深色模式（统一使用 siteTheme 与主页共享，若不需共享可改回 toolsTheme）
+    const themeToggle = document.getElementById('themeToggle');
+    const rootBody = document.body;
+    if (localStorage.getItem('siteTheme') === 'dark') {
+        rootBody.classList.add('dark');
+        themeToggle.innerHTML = '☀️ 浅色模式';
+    }
+    themeToggle.addEventListener('click', () => {
         rootBody.classList.toggle('dark');
         const isDark = rootBody.classList.contains('dark');
-        localStorage.setItem('toolsTheme', isDark ? 'dark' : 'light');
-        themeBtn.innerText = isDark ? '☀️ 浅色模式' : '🌙 深色模式';
+        localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
+        themeToggle.innerHTML = isDark ? '☀️ 浅色模式' : '🌙 深色模式';
     });
 </script>
 </body>
