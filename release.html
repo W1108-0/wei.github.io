@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>软件发布站 · 安全工具箱</title>
+    <!-- 防闪烁脚本：在页面渲染前设置主题 -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('siteTheme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else if (savedTheme === 'light') {
+                document.documentElement.classList.remove('dark');
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
     <style>
         * {
             margin: 0;
@@ -25,7 +38,7 @@
             --badge-text: #0369a1;
         }
 
-        body.dark {
+        :root.dark {
             --bg: #0f172a;
             --card-bg: #1e293b;
             --text: #f1f5f9;
@@ -53,7 +66,7 @@
             background: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.08) 0%, rgba(139, 92, 246, 0.05) 45%, transparent 70%);
         }
 
-        body.dark .bg-glow {
+        :root.dark .bg-glow {
             background: radial-gradient(circle at 80% 30%, rgba(56, 189, 248, 0.08) 0%, rgba(139, 92, 246, 0.05) 60%, transparent 90%);
         }
 
@@ -63,7 +76,6 @@
             padding: 2rem 1.5rem;
         }
 
-        /* 头部按钮组 */
         .header-buttons {
             position: fixed;
             top: 1rem;
@@ -94,7 +106,6 @@
             border-color: var(--primary);
         }
 
-        /* 头部标题区 */
         .header {
             text-align: center;
             margin-bottom: 3rem;
@@ -114,7 +125,6 @@
             font-size: 1.1rem;
         }
 
-        /* 统计卡片 */
         .stats {
             display: flex;
             justify-content: center;
@@ -141,7 +151,6 @@
             color: var(--text-light);
         }
 
-        /* 软件网格 */
         .software-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
@@ -258,8 +267,7 @@
         <p>加密 · 隐写 · 文件保护 · 系统监控 —— 一站式安全工具集</p>
     </div>
 
-    <!-- 统计卡片 -->
-    <div class="stats" id="statsContainer">
+    <div class="stats">
         <div class="stat-card"><div class="stat-number">5</div><div class="stat-label">软件工具</div></div>
         <div class="stat-card"><div class="stat-number">~98</div><div class="stat-label">MB 总大小</div></div>
         <div class="stat-card"><div class="stat-number">免费</div><div class="stat-label">开源/免费使用</div></div>
@@ -365,18 +373,27 @@
 </div>
 
 <script>
-    // 深色模式切换
+    // 深色模式切换（统一使用 siteTheme）
     const themeToggle = document.getElementById('themeToggle');
-    const root = document.body;
-    if (localStorage.getItem('releaseTheme') === 'dark') {
-        root.classList.add('dark');
+    function setTheme(isDark) {
+        if (isDark) {
+            document.documentElement.classList.add('dark');
+            themeToggle.innerHTML = '☀️ 浅色模式';
+        } else {
+            document.documentElement.classList.remove('dark');
+            themeToggle.innerHTML = '🌙 深色模式';
+        }
+        localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
+    }
+    // 初始化按钮文字（同步当前状态）
+    if (document.documentElement.classList.contains('dark')) {
         themeToggle.innerHTML = '☀️ 浅色模式';
+    } else {
+        themeToggle.innerHTML = '🌙 深色模式';
     }
     themeToggle.addEventListener('click', () => {
-        root.classList.toggle('dark');
-        const isDark = root.classList.contains('dark');
-        localStorage.setItem('releaseTheme', isDark ? 'dark' : 'light');
-        themeToggle.innerHTML = isDark ? '☀️ 浅色模式' : '🌙 深色模式';
+        const isDark = document.documentElement.classList.contains('dark');
+        setTheme(!isDark);
     });
 </script>
 </body>
