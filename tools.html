@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>万能工具箱 · 单列增强版</title>
+    <!-- 防闪烁脚本：在页面渲染前设置主题 -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('siteTheme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else if (savedTheme === 'light') {
+                document.documentElement.classList.remove('dark');
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         * {
@@ -24,7 +37,7 @@
             --radius: 1rem;
         }
 
-        body.dark {
+        :root.dark {
             --bg: #0f172a;
             --card-bg: #1e293b;
             --text: #f1f5f9;
@@ -45,7 +58,6 @@
             margin: 0 auto;
         }
 
-        /* 头部 */
         .header {
             display: flex;
             justify-content: space-between;
@@ -87,7 +99,6 @@
             border-color: var(--primary);
         }
 
-        /* 搜索栏 */
         .search-bar {
             margin-bottom: 1.5rem;
             display: flex;
@@ -126,7 +137,6 @@
             margin-bottom: 1rem;
         }
 
-        /* 单列布局 */
         .tools-list {
             display: flex;
             flex-direction: column;
@@ -284,21 +294,19 @@
         <button class="theme-btn" id="themeToggle">🌙 深色模式</button>
     </div>
 
-    <!-- 搜索筛选栏 -->
     <div class="search-bar">
         <input type="text" id="searchInput" placeholder="🔍 输入工具名称进行筛选..." autocomplete="off">
         <button id="clearSearchBtn">✖️ 清空</button>
     </div>
     <div class="tools-count" id="toolsCount"></div>
 
-    <!-- 工具列表容器（单列） -->
     <div class="tools-list" id="toolsList"></div>
 
     <footer>⚡ 点击任意工具标题展开 | 所有工具本地运行 | 支持实时搜索筛选</footer>
 </div>
 
 <script>
-    // ==================== 工具数据定义（25个） ====================
+    // ==================== 工具数据定义（25个工具） ====================
     const toolsData = [
         { id: "calculator", icon: "📱", name: "增强计算器", html: `
             <div class="mode-switch flex-row"><span>模式：</span>
@@ -470,42 +478,7 @@
         `, init: initTypingTest }
     ];
 
-    // 渲染工具列表（支持过滤）
-    let currentFilter = '';
-    function renderTools() {
-        const container = document.getElementById('toolsList');
-        if (!container) return;
-        const filtered = toolsData.filter(tool => 
-            tool.name.toLowerCase().includes(currentFilter.toLowerCase())
-        );
-        document.getElementById('toolsCount').innerText = `共 ${filtered.length} 个工具 (总计 ${toolsData.length})`;
-        container.innerHTML = '';
-        filtered.forEach(tool => {
-            const card = document.createElement('div');
-            card.className = 'tool-card';
-            card.id = `tool-${tool.id}`;
-            card.setAttribute('data-name', tool.name);
-            card.innerHTML = `
-                <div class="tool-header">
-                    <div class="tool-title"><span class="tool-icon">${tool.icon}</span> ${tool.name}</div>
-                    <span class="expand-icon">▼</span>
-                </div>
-                <div class="tool-content">
-                    <div class="tool-body">${tool.html}</div>
-                </div>
-            `;
-            container.appendChild(card);
-            const header = card.querySelector('.tool-header');
-            header.addEventListener('click', (e) => {
-                e.stopPropagation();
-                card.classList.toggle('expanded');
-            });
-            // 执行初始化函数（确保元素存在后绑定）
-            if (tool.init) tool.init();
-        });
-    }
-
-    // ==================== 所有工具的初始化函数（完整实现） ====================
+    // ==================== 所有工具的初始化函数 ====================
     function initCalculator() {
         const input = document.getElementById('calcInput');
         const resultDiv = document.getElementById('calcResult');
@@ -764,7 +737,42 @@
         resetTest();
     }
 
-    // 搜索筛选逻辑
+    // 渲染工具列表（支持搜索筛选）
+    let currentFilter = '';
+    function renderTools() {
+        const container = document.getElementById('toolsList');
+        if (!container) return;
+        const filtered = toolsData.filter(tool => 
+            tool.name.toLowerCase().includes(currentFilter.toLowerCase())
+        );
+        document.getElementById('toolsCount').innerText = `共 ${filtered.length} 个工具 (总计 ${toolsData.length})`;
+        container.innerHTML = '';
+        filtered.forEach(tool => {
+            const card = document.createElement('div');
+            card.className = 'tool-card';
+            card.id = `tool-${tool.id}`;
+            card.setAttribute('data-name', tool.name);
+            card.innerHTML = `
+                <div class="tool-header">
+                    <div class="tool-title"><span class="tool-icon">${tool.icon}</span> ${tool.name}</div>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="tool-content">
+                    <div class="tool-body">${tool.html}</div>
+                </div>
+            `;
+            container.appendChild(card);
+            const header = card.querySelector('.tool-header');
+            header.addEventListener('click', (e) => {
+                e.stopPropagation();
+                card.classList.toggle('expanded');
+            });
+            // 执行工具的初始化函数
+            if (tool.init) tool.init();
+        });
+    }
+
+    // 搜索框交互
     const searchInput = document.getElementById('searchInput');
     const clearBtn = document.getElementById('clearSearchBtn');
     function filterTools() {
@@ -776,22 +784,32 @@
         searchInput.value = '';
         filterTools();
     });
-    // 初始渲染
-    renderTools();
 
-    // 深色模式（统一使用 siteTheme 与主页共享，若不需共享可改回 toolsTheme）
+    // 深色模式切换（统一使用 siteTheme）
     const themeToggle = document.getElementById('themeToggle');
-    const rootBody = document.body;
-    if (localStorage.getItem('siteTheme') === 'dark') {
-        rootBody.classList.add('dark');
+    function setTheme(isDark) {
+        if (isDark) {
+            document.documentElement.classList.add('dark');
+            themeToggle.innerHTML = '☀️ 浅色模式';
+        } else {
+            document.documentElement.classList.remove('dark');
+            themeToggle.innerHTML = '🌙 深色模式';
+        }
+        localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
+    }
+    // 初始化按钮文字（同步当前状态）
+    if (document.documentElement.classList.contains('dark')) {
         themeToggle.innerHTML = '☀️ 浅色模式';
+    } else {
+        themeToggle.innerHTML = '🌙 深色模式';
     }
     themeToggle.addEventListener('click', () => {
-        rootBody.classList.toggle('dark');
-        const isDark = rootBody.classList.contains('dark');
-        localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
-        themeToggle.innerHTML = isDark ? '☀️ 浅色模式' : '🌙 深色模式';
+        const isDark = document.documentElement.classList.contains('dark');
+        setTheme(!isDark);
     });
+
+    // 初始渲染
+    renderTools();
 </script>
 </body>
 </html>
