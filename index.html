@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Wei · 筑梦空间</title>
+    <!-- 防闪烁脚本：在页面渲染前设置主题 -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('siteTheme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else if (savedTheme === 'light') {
+                document.documentElement.classList.remove('dark');
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
     <style>
         * {
             margin: 0;
@@ -23,7 +36,7 @@
             --shadow-md: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
         }
 
-        body.dark {
+        :root.dark {
             --bg-color: #0f172a;
             --card-bg: rgba(30, 41, 59, 0.75);
             --text-primary: #f1f5f9;
@@ -53,7 +66,7 @@
             background: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.08) 0%, rgba(139, 92, 246, 0.05) 45%, transparent 70%);
         }
 
-        body.dark .bg-glow {
+        :root.dark .bg-glow {
             background: radial-gradient(circle at 80% 30%, rgba(56, 189, 248, 0.1) 0%, rgba(139, 92, 246, 0.06) 60%, transparent 90%);
         }
 
@@ -331,39 +344,30 @@
     updateGreetingAndTime();
     setInterval(updateGreetingAndTime, 1000);
 
-    // 深色模式 (独立存储)
-    const themeToggleBtn = document.getElementById('themeToggle');
-    const rootBody = document.body;
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
+    // 深色模式切换（统一使用 siteTheme）
+    const themeToggle = document.getElementById('themeToggle');
     function setTheme(isDark) {
         if (isDark) {
-            rootBody.classList.add('dark');
-            if (themeToggleBtn) themeToggleBtn.innerHTML = '☀️ 浅色模式';
+            document.documentElement.classList.add('dark');
+            themeToggle.innerHTML = '☀️ 浅色模式';
         } else {
-            rootBody.classList.remove('dark');
-            if (themeToggleBtn) themeToggleBtn.innerHTML = '🌙 深色模式';
+            document.documentElement.classList.remove('dark');
+            themeToggle.innerHTML = '🌙 深色模式';
         }
-        localStorage.setItem('homeTheme', isDark ? 'dark' : 'light');
+        localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
     }
-
-    const savedTheme = localStorage.getItem('homeTheme');
-    if (savedTheme === 'dark') {
-        setTheme(true);
-    } else if (savedTheme === 'light') {
-        setTheme(false);
+    // 初始化按钮文字（同步当前状态）
+    if (document.documentElement.classList.contains('dark')) {
+        themeToggle.innerHTML = '☀️ 浅色模式';
     } else {
-        setTheme(prefersDark);
+        themeToggle.innerHTML = '🌙 深色模式';
     }
+    themeToggle.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.contains('dark');
+        setTheme(!isDark);
+    });
 
-    if (themeToggleBtn) {
-        themeToggleBtn.addEventListener('click', () => {
-            const isDark = rootBody.classList.contains('dark');
-            setTheme(!isDark);
-        });
-    }
-
-    // 动态链接配置 - 已更新用户名为 w1108-0
+    // 动态链接配置
     const username = 'w1108-0';
     const repoName = 'wei.github.io';
 
