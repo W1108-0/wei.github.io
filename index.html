@@ -312,6 +312,7 @@
         <a href="#" class="btn btn-outline" id="repoBtn">📁 当前仓库</a>
         <a href="tools.html" class="btn btn-outline" id="toolsBtn">🧰 万能工具箱</a>
         <a href="release.html" class="btn btn-outline" id="softwareBtn">🛡️ 安全工具箱</a>
+        <a href="share.html" class="btn btn-outline" id="shareBtn">🔗 友情分享</a>
         <a href="#" class="btn btn-outline" id="contactBtn">✉️ 联络灵感</a>
     </div>
 
@@ -356,7 +357,7 @@
         }
         localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
     }
-    // 初始化按钮文字（同步当前状态）
+    // 同步按钮文字（防闪烁脚本已处理根元素类）
     if (document.documentElement.classList.contains('dark')) {
         themeToggle.innerHTML = '☀️ 浅色模式';
     } else {
