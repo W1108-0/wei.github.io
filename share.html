@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>友情分享 · 私密链接导航</title>
+    <!-- 防闪烁脚本：在页面渲染前设置主题 -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('siteTheme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else if (savedTheme === 'light') {
+                document.documentElement.classList.remove('dark');
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
     <style>
         * {
             margin: 0;
@@ -50,7 +63,7 @@
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
             width: 100%;
-            max-width: 680px;
+            max-width: 720px;
             padding: 2rem;
             transition: all 0.2s;
         }
@@ -165,10 +178,16 @@
             color: inherit;
         }
 
-        .theme-switch {
+        /* 右上角按钮组 */
+        .top-buttons {
             position: fixed;
             top: 1rem;
             right: 1rem;
+            display: flex;
+            gap: 0.8rem;
+            z-index: 100;
+        }
+        .nav-btn {
             background: var(--card-bg);
             backdrop-filter: blur(8px);
             border: 1px solid var(--border);
@@ -178,13 +197,17 @@
             font-size: 0.8rem;
             font-weight: 500;
             color: var(--text);
-            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
             box-shadow: var(--shadow);
+            text-decoration: none;
         }
-
-        .theme-switch:hover {
+        .nav-btn:hover {
             background: var(--primary);
             color: white;
+            border-color: var(--primary);
         }
 
         footer {
@@ -197,11 +220,16 @@
         @media (max-width: 640px) {
             .glass-card { padding: 1.5rem; }
             .link-item { flex-wrap: wrap; }
+            .top-buttons { top: 0.5rem; right: 0.5rem; }
+            .nav-btn { padding: 0.3rem 0.8rem; font-size: 0.75rem; }
         }
     </style>
 </head>
 <body>
-<div class="theme-switch" id="themeToggle">🌙 深色模式</div>
+<div class="top-buttons">
+    <a href="index.html" class="nav-btn">🏠 返回主页</a>
+    <div class="nav-btn" id="themeToggle">🌙 深色模式</div>
+</div>
 <div class="glass-card" id="app">
     <h1>🔗 友情分享</h1>
     <div class="sub">精选实用站点 · 私密导航</div>
@@ -280,6 +308,30 @@
                 </div>
                 <a href="https://www.epicgames.com/site/home/?lang=zh-CN" target="_blank" rel="noopener noreferrer">访问 →</a>
             </div>
+            <div class="link-item">
+                <div class="link-icon">🛠️</div>
+                <div class="link-info">
+                    <div class="link-title">Steam++ · 工具箱</div>
+                    <div class="link-url">steampp.net</div>
+                </div>
+                <a href="https://steampp.net/" target="_blank" rel="noopener noreferrer">访问 →</a>
+            </div>
+            <div class="link-item">
+                <div class="link-icon">🔧</div>
+                <div class="link-info">
+                    <div class="link-title">SteamTools · 实用工具</div>
+                    <div class="link-url">steamtools.net</div>
+                </div>
+                <a href="https://www.steamtools.net/" target="_blank" rel="noopener noreferrer">访问 →</a>
+            </div>
+            <div class="link-item">
+                <div class="link-icon">🎬</div>
+                <div class="link-info">
+                    <div class="link-title">B站 · 推荐视频</div>
+                    <div class="link-url">bilibili.com</div>
+                </div>
+                <a href="https://www.bilibili.com/video/BV1rEFMzGEZ5/" target="_blank" rel="noopener noreferrer">访问 →</a>
+            </div>
         </div>
         <footer>🔒 密码验证 · 会话有效 | 仅分享给信任的朋友</footer>
     </div>
@@ -287,32 +339,17 @@
 
 <script>
     // ==================== 密码验证配置 ====================
-    const SALT = "FriendlySalt2025";
-    const ITERATIONS = 100000;
-    // ⚠️ 请将下面占位符替换为 hash_helper.html 生成的实际哈希值
+    // 给定的 SHA-256 哈希值（对应密码，原始密码不公开）
     const CORRECT_HASH = "23d6a88ef27ebe507ad65c950a740b2b654024d57bdc61ee7c581971de51dce6";
 
-    async function hashPassword(password) {
+    // 使用 Web Crypto API 验证 SHA-256
+    async function verifyWithSHA256(password) {
         const encoder = new TextEncoder();
-        const keyMaterial = await crypto.subtle.importKey(
-            "raw",
-            encoder.encode(password),
-            "PBKDF2",
-            false,
-            ["deriveBits"]
-        );
-        const derivedBits = await crypto.subtle.deriveBits(
-            {
-                name: "PBKDF2",
-                salt: encoder.encode(SALT),
-                iterations: ITERATIONS,
-                hash: "SHA-256"
-            },
-            keyMaterial,
-            256
-        );
-        const hashArray = Array.from(new Uint8Array(derivedBits));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        const data = encoder.encode(password);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hashHex === CORRECT_HASH;
     }
 
     const authPanel = document.getElementById('authPanel');
@@ -341,8 +378,8 @@
         submitBtn.disabled = true;
         submitBtn.innerText = '验证中...';
         try {
-            const inputHash = await hashPassword(pwd);
-            if (inputHash === CORRECT_HASH) {
+            const isValid = await verifyWithSHA256(pwd);
+            if (isValid) {
                 sessionStorage.setItem('shareAuth', 'true');
                 checkAuth();
             } else {
@@ -365,7 +402,7 @@
     });
     checkAuth();
 
-    // 深色模式（统一 siteTheme）
+    // 深色模式切换（统一 siteTheme，防闪烁）
     const themeToggle = document.getElementById('themeToggle');
     function setTheme(isDark) {
         if (isDark) {
@@ -377,15 +414,11 @@
         }
         localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
     }
-    if (localStorage.getItem('siteTheme') === 'dark') {
-        document.documentElement.classList.add('dark');
+    // 同步按钮文字
+    if (document.documentElement.classList.contains('dark')) {
         themeToggle.innerHTML = '☀️ 浅色模式';
-    } else if (localStorage.getItem('siteTheme') === 'light') {
-        document.documentElement.classList.remove('dark');
+    } else {
         themeToggle.innerHTML = '🌙 深色模式';
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark');
-        themeToggle.innerHTML = '☀️ 浅色模式';
     }
     themeToggle.addEventListener('click', () => {
         const isDark = document.documentElement.classList.contains('dark');
