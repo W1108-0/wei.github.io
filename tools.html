@@ -3,20 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>万能工具箱 · 单列增强版</title>
-    <!-- 防闪烁脚本：在页面渲染前设置主题 -->
-    <script>
-        (function() {
-            const savedTheme = localStorage.getItem('siteTheme');
-            if (savedTheme === 'dark') {
-                document.documentElement.classList.add('dark');
-            } else if (savedTheme === 'light') {
-                document.documentElement.classList.remove('dark');
-            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                document.documentElement.classList.add('dark');
-            }
-        })();
-    </script>
+    <title>万能工具箱 · 增强版</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         * {
@@ -289,7 +276,7 @@
     <div class="header">
         <div class="header-left">
             <a href="index.html" class="back-home">🏠 返回主页</a>
-            <h1>🧰 万能工具箱 <span class="badge">单列 · 25合1</span></h1>
+            <h1>🧰 万能工具箱 <span class="badge">增强版 · 优化功能</span></h1>
         </div>
         <button class="theme-btn" id="themeToggle">🌙 深色模式</button>
     </div>
@@ -306,7 +293,7 @@
 </div>
 
 <script>
-    // ==================== 工具数据定义（25个工具） ====================
+    // ==================== 工具数据定义（25个，含优化） ====================
     const toolsData = [
         { id: "calculator", icon: "📱", name: "增强计算器", html: `
             <div class="mode-switch flex-row"><span>模式：</span>
@@ -348,7 +335,9 @@
             <div class="result" id="tempResult">结果: 77 °F</div>
         `, init: initTemp },
         { id: "quote", icon: "📜", name: "随机名言", html: `
-            <div class="flex-row"><select id="quoteCategory"><option value="all">全部</option><option value="code">编程</option><option value="life">人生</option></select><button id="newQuoteBtn">✨ 随机一句</button></div>
+            <div class="flex-row"><select id="quoteCategory">
+                <option value="all">全部</option><option value="code">编程</option><option value="life">人生</option><option value="tech">科技</option>
+            </select><button id="newQuoteBtn">✨ 随机一句</button></div>
             <div class="result" id="quoteText" style="min-height: 70px;">点击按钮生成一句名言</div>
         `, init: initQuote },
         { id: "counter", icon: "👀", name: "访问计数器", html: `
@@ -356,12 +345,17 @@
             <button id="resetCountBtn">重置计数器</button>
         `, init: initCounter },
         { id: "countdown", icon: "⏳", name: "倒计时器", html: `
-            <div class="flex-row"><input type="number" id="countdownSeconds" placeholder="秒数" value="60"><button id="startCountdown">开始</button><button id="pauseCountdown">暂停</button><button id="resumeCountdown">继续</button><button id="stopCountdown">停止</button></div>
+            <div class="flex-row"><input type="number" id="countdownValue" placeholder="数值" value="60" style="width: 100px;">
+            <select id="countdownUnit"><option value="seconds">秒</option><option value="minutes">分钟</option><option value="hours">小时</option></select>
+            <button id="startCountdown">开始</button>
+            <button id="pauseCountdown" disabled>暂停</button>
+            <button id="resumeCountdown" disabled>继续</button>
+            <button id="stopCountdown" disabled>停止</button></div>
             <div class="result" id="countdownDisplay">剩余: 0 秒</div>
         `, init: initCountdown },
         { id: "textStats", icon: "📝", name: "文字计数器", html: `
             <textarea id="textCounterInput" rows="3" placeholder="输入一些文字..."></textarea>
-            <div class="result" id="textStats">字符数: 0 | 单词数: 0 | 行数: 0</div>
+            <div class="result" id="textStats">字符数: 0 | 单词数: 0 | 行数: 0 | 汉字数: 0</div>
         `, init: initTextStats },
         { id: "colorTool", icon: "🎨", name: "颜色工具", html: `
             <div class="flex-row"><input type="color" id="colorPicker" value="#3b82f6"><span id="colorCode">#3b82f6</span><span id="colorRgb">rgb(59,130,246)</span></div>
@@ -381,7 +375,7 @@
         `, init: initMarkdown },
         { id: "randomNum", icon: "🎲", name: "随机数生成", html: `
             <div class="flex-row"><span>最小值</span><input type="number" id="randMin" value="1"><span>最大值</span><input type="number" id="randMax" value="100"></div>
-            <button id="rollBtn">🎲 生成随机数</button>
+            <div class="flex-row"><span>生成数量</span><input type="number" id="randCount" value="1" min="1" max="50"><button id="rollBtn">🎲 生成随机数</button></div>
             <div class="result" id="randomResult">结果: -</div>
         `, init: initRandomNum },
         { id: "bmi", icon: "⚖️", name: "BMI 计算器", html: `
@@ -406,7 +400,12 @@
         `, init: initBase },
         { id: "stopwatch", icon: "⏱️", name: "秒表", html: `
             <div class="result" id="stopwatchDisplay" style="font-size: 1.8rem; text-align: center; font-family: monospace;">00:00.00</div>
-            <div class="flex-row" style="justify-content: center;"><button id="stopwatchStart">开始</button><button id="stopwatchPause">暂停</button><button id="stopwatchReset">复位</button><button id="stopwatchLap">计次</button></div>
+            <div class="flex-row" style="justify-content: center;">
+                <button id="stopwatchStart">开始</button>
+                <button id="stopwatchPause" disabled>暂停</button>
+                <button id="stopwatchReset">复位</button>
+                <button id="stopwatchLap" disabled>计次</button>
+            </div>
             <div class="result" id="stopwatchLaps" style="font-size: 0.8rem; max-height: 100px; overflow-y: auto;">计次记录：</div>
         `, init: initStopwatch },
         { id: "age", icon: "🎂", name: "年龄计算器", html: `
@@ -651,18 +650,180 @@
         renderTodos();
     }
     function initTemp() { const btn = document.getElementById('convertTemp'); if(btn) btn.onclick = () => { let val = parseFloat(document.getElementById('tempInput').value)||0; const from=document.getElementById('tempFrom').value, to=document.getElementById('tempTo').value; let celsius = from==='C'?val:(val-32)*5/9; let result = to==='C'?celsius:celsius*9/5+32; document.getElementById('tempResult').innerHTML = `结果: ${result.toFixed(2)} °${to==='C'?'C':'F'}`; }; btn?.click(); }
+    
+    // 优化：随机名言大幅扩充，增加科技分类
     function initQuote() {
-        const quotes = { all:["代码改变世界，一行一行。","简单是可靠的先决条件。","保持好奇，持续创造。","GitHub Pages 让每个人拥有网站。","今日事，今日毕。","设计不只是看起来怎样，还在于如何工作。","与其等待机会，不如创造机会。","不要害怕犯错，害怕停下。","万物皆可自动化。","Less is more.","Talk is cheap. Show me the code."], code:["Talk is cheap. Show me the code.","保持简单，保持愚蠢。","先运行，再优化。","任何足够先进的技术都与魔法无异。","编程是思考，不是打字。"], life:["活在当下。","简单的幸福。","坚持不懈，直到成功。","每天进步一点点。","微笑面对生活。"] };
-        const btn = document.getElementById('newQuoteBtn'); const category = document.getElementById('quoteCategory');
-        if(btn) btn.onclick = () => { const cat = category.value; const list = quotes[cat]||quotes.all; const idx = Math.floor(Math.random()*list.length); document.getElementById('quoteText').innerText = `“${list[idx]}”`; }; btn?.click();
+        const quotes = {
+            all: [
+                "代码改变世界，一行一行。", "简单是可靠的先决条件。", "保持好奇，持续创造。",
+                "GitHub Pages 让每个人拥有网站。", "今日事，今日毕。", "设计不只是看起来怎样，还在于如何工作。",
+                "与其等待机会，不如创造机会。", "不要害怕犯错，害怕停下。", "万物皆可自动化。",
+                "Less is more.", "Talk is cheap. Show me the code.",
+                "唯一比失明更糟的是有视力却没有远见。——海伦·凯勒", "生活就像骑自行车，要想保持平衡，就得往前走。——爱因斯坦",
+                "成功不是终点，失败也并非末日，重要的是继续前进的勇气。——丘吉尔",
+                "创新区分领袖与追随者。——乔布斯", "行胜于言。——梅贻琦",
+                "人工智能的终极目标不是模仿人类，而是超越人类。", "数据是新时代的石油。——Clive Humby",
+                "艺术是时代的灵魂。", "自然从不背离它热爱的人。——华兹华斯",
+                "哲学是科学的母亲。"
+            ],
+            code: [
+                "Talk is cheap. Show me the code.", "保持简单，保持愚蠢。", "先运行，再优化。",
+                "任何足够先进的技术都与魔法无异。", "编程是思考，不是打字。",
+                "调试的难度是写代码的两倍。", "简单是可靠的先决条件。—— Edsger Dijkstra"
+            ],
+            life: [
+                "活在当下。", "简单的幸福。", "坚持不懈，直到成功。", "每天进步一点点。",
+                "微笑面对生活。", "真正的勇气不是没有恐惧，而是带着恐惧前行。",
+                "你无法改变过去，但可以改变未来。", "幸福不是拥有的多，而是计较的少。"
+            ],
+            tech: [
+                "科技的本质是让复杂的事情变简单。——Steve Jobs", "人工智能是新的电力。——Andrew Ng",
+                "区块链革命才刚刚开始。", "量子计算将重塑未来。", "网络安全不是产品，而是过程。——Bruce Schneier",
+                "5G 将连接一切。", "虚拟现实让想象成为现实。", "云计算让计算像水电一样方便。"
+            ]
+        };
+        const btn = document.getElementById('newQuoteBtn');
+        const category = document.getElementById('quoteCategory');
+        if(btn) btn.onclick = () => { 
+            const cat = category.value; 
+            const list = quotes[cat] || quotes.all; 
+            const idx = Math.floor(Math.random() * list.length); 
+            document.getElementById('quoteText').innerText = `“${list[idx]}”`; 
+        }; 
+        btn?.click();
     }
+    
     function initCounter() { let visits = parseInt(localStorage.getItem('visitCountTools'))||0; visits++; localStorage.setItem('visitCountTools',visits); const span = document.getElementById('visitCount'); if(span) span.innerText = `本设备访问次数: ${visits}`; const reset = document.getElementById('resetCountBtn'); if(reset) reset.onclick = () => { localStorage.setItem('visitCountTools',0); if(span) span.innerText='本设备访问次数: 0'; }; }
+    
+    // 优化倒计时器：单位支持、按钮状态管理
     function initCountdown() {
-        let interval=null, remaining=0; const display=document.getElementById('countdownDisplay'); const start=()=>{ if(interval) clearInterval(interval); remaining=parseInt(document.getElementById('countdownSeconds').value); if(isNaN(remaining)||remaining<=0){ if(display) display.innerText='请设置正数秒数'; return; } if(display) display.innerText=`剩余: ${remaining} 秒`; interval=setInterval(()=>{ if(remaining<=1){ clearInterval(interval); interval=null; if(display) display.innerText='⏰ 时间到!'; } else{ remaining--; if(display) display.innerText=`剩余: ${remaining} 秒`; } },1000); };
-        const pause=()=>{ if(interval) clearInterval(interval); interval=null; }; const resume=()=>{ if(interval) return; if(remaining<=0) return; interval=setInterval(()=>{ if(remaining<=1){ clearInterval(interval); interval=null; if(display) display.innerText='⏰ 时间到!'; } else{ remaining--; if(display) display.innerText=`剩余: ${remaining} 秒`; } },1000); }; const stop=()=>{ if(interval) clearInterval(interval); interval=null; if(display) display.innerText='剩余: 0 秒'; remaining=0; };
-        document.getElementById('startCountdown').onclick=start; document.getElementById('pauseCountdown').onclick=pause; document.getElementById('resumeCountdown').onclick=resume; document.getElementById('stopCountdown').onclick=stop;
+        let interval = null;
+        let remainingSeconds = 0;
+        const valueInput = document.getElementById('countdownValue');
+        const unitSelect = document.getElementById('countdownUnit');
+        const display = document.getElementById('countdownDisplay');
+        const startBtn = document.getElementById('startCountdown');
+        const pauseBtn = document.getElementById('pauseCountdown');
+        const resumeBtn = document.getElementById('resumeCountdown');
+        const stopBtn = document.getElementById('stopCountdown');
+        
+        function toSeconds() {
+            let val = parseFloat(valueInput.value);
+            if (isNaN(val)) val = 0;
+            const unit = unitSelect.value;
+            if (unit === 'minutes') val *= 60;
+            else if (unit === 'hours') val *= 3600;
+            return Math.floor(val);
+        }
+        
+        function updateDisplay() {
+            display.innerText = `剩余: ${remainingSeconds} 秒`;
+        }
+        
+        function resetButtonsState(started, paused) {
+            // started: 倒计时是否正在运行（interval存在且未暂停）
+            // 当未开始或已停止时，开始按钮可用，暂停/继续/停止不可用
+            if (!started) {
+                startBtn.disabled = false;
+                pauseBtn.disabled = true;
+                resumeBtn.disabled = true;
+                stopBtn.disabled = true;
+            } else {
+                // 已开始，但可能暂停或运行
+                if (paused) {
+                    startBtn.disabled = true;
+                    pauseBtn.disabled = true;
+                    resumeBtn.disabled = false;
+                    stopBtn.disabled = false;
+                } else {
+                    startBtn.disabled = true;
+                    pauseBtn.disabled = false;
+                    resumeBtn.disabled = true;
+                    stopBtn.disabled = false;
+                }
+            }
+        }
+        
+        function start() {
+            if (interval) clearInterval(interval);
+            let total = toSeconds();
+            if (total <= 0) {
+                display.innerText = '请设置正数时间';
+                return;
+            }
+            remainingSeconds = total;
+            updateDisplay();
+            interval = setInterval(() => {
+                if (remainingSeconds <= 1) {
+                    clearInterval(interval);
+                    interval = null;
+                    display.innerText = '⏰ 时间到!';
+                    resetButtonsState(false, false);
+                } else {
+                    remainingSeconds--;
+                    updateDisplay();
+                }
+            }, 1000);
+            resetButtonsState(true, false);
+        }
+        
+        function pause() {
+            if (interval) {
+                clearInterval(interval);
+                interval = null;
+                resetButtonsState(true, true);
+            }
+        }
+        
+        function resume() {
+            if (interval) return;
+            if (remainingSeconds <= 0) return;
+            interval = setInterval(() => {
+                if (remainingSeconds <= 1) {
+                    clearInterval(interval);
+                    interval = null;
+                    display.innerText = '⏰ 时间到!';
+                    resetButtonsState(false, false);
+                } else {
+                    remainingSeconds--;
+                    updateDisplay();
+                }
+            }, 1000);
+            resetButtonsState(true, false);
+        }
+        
+        function stop() {
+            if (interval) clearInterval(interval);
+            interval = null;
+            remainingSeconds = 0;
+            updateDisplay();
+            resetButtonsState(false, false);
+        }
+        
+        startBtn.onclick = start;
+        pauseBtn.onclick = pause;
+        resumeBtn.onclick = resume;
+        stopBtn.onclick = stop;
+        resetButtonsState(false, false);
     }
-    function initTextStats() { const ta = document.getElementById('textCounterInput'); const update = () => { const text = ta.value; const charCount = text.length; const wordCount = text.trim()===''?0:text.trim().split(/\s+/).length; const lineCount = text===''?0:text.split(/\n/).length; document.getElementById('textStats').innerText = `字符数: ${charCount} | 单词数: ${wordCount} | 行数: ${lineCount}`; }; ta.oninput = update; update(); }
+    
+    // 优化文字计数器：增加汉字计数
+    function initTextStats() {
+        const ta = document.getElementById('textCounterInput');
+        const update = () => {
+            const text = ta.value;
+            const charCount = text.length;
+            const wordCount = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+            const lineCount = text === '' ? 0 : text.split(/\n/).length;
+            // 统计汉字（Unicode 基本汉字范围 \u4e00-\u9fff）
+            const chineseChars = text.match(/[\u4e00-\u9fff]/g);
+            const chineseCount = chineseChars ? chineseChars.length : 0;
+            document.getElementById('textStats').innerText = `字符数: ${charCount} | 单词数: ${wordCount} | 行数: ${lineCount} | 汉字数: ${chineseCount}`;
+        };
+        ta.oninput = update;
+        update();
+    }
+    
     function initColorTool() {
         const picker=document.getElementById('colorPicker'), codeSpan=document.getElementById('colorCode'), rgbSpan=document.getElementById('colorRgb'), demo=document.getElementById('colorDemo');
         const updateColor=(color)=>{ demo.style.background=color; codeSpan.innerText=color; let r=parseInt(color.slice(1,3),16),g=parseInt(color.slice(3,5),16),b=parseInt(color.slice(5,7),16); rgbSpan.innerText=`rgb(${r},${g},${b})`; };
@@ -670,17 +831,98 @@
     }
     function initLength() { const map={m:1,ft:3.28084,cm:100,in:39.3701,km:0.001,mi:0.000621371}; const btn=document.getElementById('convertLength'); if(btn) btn.onclick=()=>{ let val=parseFloat(document.getElementById('lengthVal').value)||0; const from=document.getElementById('lengthFrom').value, to=document.getElementById('lengthTo').value; const meters=val/map[from]; const result=meters*map[to]; document.getElementById('lengthResult').innerText=`结果: ${result.toFixed(6)} ${to}`; }; btn?.click(); }
     function initMarkdown() { const md=document.getElementById('mdInput'), preview=document.getElementById('mdPreview'); const update=()=>{ if(typeof marked!=='undefined') preview.innerHTML=marked.parse(md.value); else preview.innerText='加载 marked 库中...'; }; md.oninput=update; md.value="# 欢迎\n**实时预览**\n- 列表1\n- 列表2"; update(); }
-    function initRandomNum() { const btn=document.getElementById('rollBtn'); if(btn) btn.onclick=()=>{ let min=parseInt(document.getElementById('randMin').value)||1, max=parseInt(document.getElementById('randMax').value)||100; if(min>max)[min,max]=[max,min]; const rand=Math.floor(Math.random()*(max-min+1)+min); document.getElementById('randomResult').innerText=`结果: ${rand}`; }; btn?.click(); }
+    
+    // 优化随机数：支持生成多个不重复数字
+    function initRandomNum() {
+        const btn = document.getElementById('rollBtn');
+        if (btn) btn.onclick = () => {
+            let min = parseInt(document.getElementById('randMin').value) || 1;
+            let max = parseInt(document.getElementById('randMax').value) || 100;
+            let count = parseInt(document.getElementById('randCount').value) || 1;
+            if (min > max) [min, max] = [max, min];
+            const totalNumbers = max - min + 1;
+            if (count > totalNumbers) {
+                document.getElementById('randomResult').innerText = `错误：最多只能生成 ${totalNumbers} 个不重复数字`;
+                return;
+            }
+            // 生成不重复随机数
+            const numbers = new Set();
+            while (numbers.size < count) {
+                const rand = Math.floor(Math.random() * (max - min + 1) + min);
+                numbers.add(rand);
+            }
+            const result = Array.from(numbers).join(', ');
+            document.getElementById('randomResult').innerHTML = `结果: ${result}`;
+        };
+        btn?.click();
+    }
+    
     function initBMI() { const btn=document.getElementById('calcBmi'); if(btn) btn.onclick=()=>{ let h=parseFloat(document.getElementById('bmiHeight').value), hUnit=document.getElementById('bmiHeightUnit').value, w=parseFloat(document.getElementById('bmiWeight').value), wUnit=document.getElementById('bmiWeightUnit').value; if(isNaN(h)||isNaN(w)||h<=0||w<=0){ document.getElementById('bmiResult').innerText='请输入有效数值'; return; } if(hUnit==='in') h*=2.54; if(wUnit==='lb') w*=0.453592; let bmi=w/((h/100)*(h/100)); let advice=bmi<18.5?'体重过轻':(bmi<24?'正常':(bmi<28?'超重':'肥胖')); document.getElementById('bmiResult').innerHTML=`BMI: ${bmi.toFixed(2)} (${advice})`; }; }
     function initWeight() { const map={kg:1,g:0.001,lb:0.453592,oz:0.0283495,t:1000}; const btn=document.getElementById('convertWeight'); if(btn) btn.onclick=()=>{ let val=parseFloat(document.getElementById('weightValue').value)||0; const from=document.getElementById('weightFrom').value, to=document.getElementById('weightTo').value; const kg=val*map[from]; const result=kg/map[to]; document.getElementById('weightResult').innerText=`结果: ${result.toFixed(6)} ${to}`; }; }
     function initBase() { const btn=document.getElementById('convertBase'); if(btn) btn.onclick=()=>{ let num=document.getElementById('numberInput').value.trim(); let fromBase=parseInt(document.getElementById('inputBase').value), toBase=parseInt(document.getElementById('outputBase').value); try{ let decimal=parseInt(num,fromBase); if(isNaN(decimal)) throw new Error(); document.getElementById('baseResult').innerText=`结果: ${decimal.toString(toBase).toUpperCase()}`; }catch(e){ document.getElementById('baseResult').innerText='转换错误，请检查输入格式'; } }; }
+    
+    // 优化秒表按钮状态
     function initStopwatch() {
-        let swInterval=null, swTime=0; const display=document.getElementById('stopwatchDisplay'), lapsDiv=document.getElementById('stopwatchLaps'); let lapCount=1; const update=()=>{ let m=Math.floor(swTime/6000), s=Math.floor((swTime%6000)/100), cs=swTime%100; display.innerText=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}.${cs.toString().padStart(2,'0')}`; };
-        document.getElementById('stopwatchStart').onclick=()=>{ if(swInterval) return; swInterval=setInterval(()=>{ swTime++; update(); },10); };
-        document.getElementById('stopwatchPause').onclick=()=>{ if(swInterval) clearInterval(swInterval); swInterval=null; };
-        document.getElementById('stopwatchReset').onclick=()=>{ if(swInterval) clearInterval(swInterval); swInterval=null; swTime=0; update(); lapsDiv.innerHTML='计次记录：'; lapCount=1; };
-        document.getElementById('stopwatchLap').onclick=()=>{ if(swTime===0 && lapsDiv.innerHTML==='计次记录：') return; const item=document.createElement('div'); item.textContent=`计次 ${lapCount++}: ${display.innerText}`; lapsDiv.appendChild(item); }; update();
+        let swInterval = null, swTime = 0;
+        const display = document.getElementById('stopwatchDisplay');
+        const lapsDiv = document.getElementById('stopwatchLaps');
+        let lapCount = 1;
+        const startBtn = document.getElementById('stopwatchStart');
+        const pauseBtn = document.getElementById('stopwatchPause');
+        const resetBtn = document.getElementById('stopwatchReset');
+        const lapBtn = document.getElementById('stopwatchLap');
+        
+        const update = () => { let m = Math.floor(swTime/6000), s = Math.floor((swTime%6000)/100), cs = swTime%100; display.innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}.${cs.toString().padStart(2,'0')}`; };
+        
+        function setButtonsState(running) {
+            // running: true 表示正在计时（interval存在），false表示停止或暂停
+            if (running) {
+                startBtn.disabled = true;
+                pauseBtn.disabled = false;
+                lapBtn.disabled = false;
+            } else {
+                startBtn.disabled = false;
+                pauseBtn.disabled = true;
+                lapBtn.disabled = true;
+            }
+            // 复位按钮始终可用
+            resetBtn.disabled = false;
+        }
+        
+        function start() {
+            if (swInterval) return;
+            swInterval = setInterval(() => { swTime++; update(); }, 10);
+            setButtonsState(true);
+        }
+        function pause() {
+            if (swInterval) clearInterval(swInterval);
+            swInterval = null;
+            setButtonsState(false);
+        }
+        function reset() {
+            if (swInterval) clearInterval(swInterval);
+            swInterval = null;
+            swTime = 0;
+            update();
+            lapsDiv.innerHTML = '计次记录：';
+            lapCount = 1;
+            setButtonsState(false);
+        }
+        function lap() {
+            if (swTime === 0 && lapsDiv.innerHTML === '计次记录：') return;
+            const current = display.innerText;
+            const lapItem = document.createElement('div');
+            lapItem.textContent = `计次 ${lapCount++}: ${current}`;
+            lapsDiv.appendChild(lapItem);
+        }
+        startBtn.onclick = start;
+        pauseBtn.onclick = pause;
+        resetBtn.onclick = reset;
+        lapBtn.onclick = lap;
+        setButtonsState(false);
+        update();
     }
+    
     function initAge() { const btn=document.getElementById('calcAge'); if(btn) btn.onclick=()=>{ let birth=new Date(document.getElementById('birthDate').value); let today=new Date(); if(isNaN(birth.getTime())){ document.getElementById('ageResult').innerText='请选择有效日期'; return; } let years=today.getFullYear()-birth.getFullYear(); let months=today.getMonth()-birth.getMonth(); let days=today.getDate()-birth.getDate(); if(days<0){ months--; let prev=new Date(today.getFullYear(),today.getMonth(),0); days+=prev.getDate(); } if(months<0){ years--; months+=12; } document.getElementById('ageResult').innerHTML=`年龄: ${years} 岁 ${months} 月 ${days} 天`; }; }
     function initCase() {
         const input=document.getElementById('caseInput'), output=document.getElementById('caseOutput'); const apply=(fn)=>{ output.innerText=fn(input.value); };
@@ -767,7 +1009,6 @@
                 e.stopPropagation();
                 card.classList.toggle('expanded');
             });
-            // 执行工具的初始化函数
             if (tool.init) tool.init();
         });
     }
@@ -797,7 +1038,6 @@
         }
         localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
     }
-    // 初始化按钮文字（同步当前状态）
     if (document.documentElement.classList.contains('dark')) {
         themeToggle.innerHTML = '☀️ 浅色模式';
     } else {
