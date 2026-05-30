@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>万能工具箱 · 增强版</title>
+    <!-- 防闪烁脚本：在页面渲染前设置主题 -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('siteTheme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else if (savedTheme === 'light') {
+                document.documentElement.classList.remove('dark');
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         * {
@@ -61,7 +74,7 @@
         }
         h1 {
             font-size: 1.8rem;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
@@ -1026,7 +1039,7 @@
         filterTools();
     });
 
-    // 深色模式切换（统一使用 siteTheme）
+    // ==================== 深色模式统一（siteTheme + 跨标签页同步） ====================
     const themeToggle = document.getElementById('themeToggle');
     function setTheme(isDark) {
         if (isDark) {
@@ -1038,6 +1051,20 @@
         }
         localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
     }
+    // 监听其他标签页的主题变更（跨标签页同步）
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'siteTheme') {
+            const isDark = e.newValue === 'dark';
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                themeToggle.innerHTML = '☀️ 浅色模式';
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeToggle.innerHTML = '🌙 深色模式';
+            }
+        }
+    });
+    // 初始化按钮文字（同步当前根元素类）
     if (document.documentElement.classList.contains('dark')) {
         themeToggle.innerHTML = '☀️ 浅色模式';
     } else {
